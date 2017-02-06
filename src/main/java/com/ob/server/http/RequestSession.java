@@ -19,4 +19,61 @@ public interface RequestSession<T> {
     int getThrottlePause();
     int getBufferSize();
     RequestSession<T> unwrap();
+    RequestSession EMPTY = new RequestSession(){
+
+        @Override
+        public void onWrite(Object message) {
+
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public void onOpen() {
+
+        }
+
+        @Override
+        public void onClose() {
+
+        }
+
+        @Override
+        public void onRead(Object message) {
+
+        }
+
+        @Override
+        public ChannelRequest getChannelRequest() {
+            return null;
+        }
+
+        @Override
+        public Object getType() {
+            return null;
+        }
+
+        @Override
+        public void setSelf(RequestSession self) {
+
+        }
+
+        @Override
+        public int getThrottlePause() {
+            return 0;
+        }
+
+        @Override
+        public int getBufferSize() {
+            return 0;
+        }
+
+        @Override
+        public RequestSession unwrap() {
+            return null;
+        }
+    };
 }

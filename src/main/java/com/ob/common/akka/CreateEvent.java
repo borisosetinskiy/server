@@ -1,4 +1,4 @@
-package com.ob.common.actor;
+package com.ob.common.akka;
 
 /**
  * Created by boris on 09.04.2016.

@@ -1,4 +1,4 @@
-package com.ob.common.actor;
+package com.ob.common.akka;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -2,7 +2,7 @@ package com.ob.server.actor;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import com.ob.common.actor.ActorUtil;
+import com.ob.common.akka.ActorUtil;
 import com.ob.common.data.Key;
 import com.ob.server.MessageAggregator;
 import com.ob.server.http.RequestSession;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RequestSessionActorWrapper implements RequestSession {
     private final RequestSession requestSession;
 
-    private final ActorRef requestActor;
+    private ActorRef requestActor;
     private MessageAggregator messageAggregator;
 
     private AtomicBoolean lock = new AtomicBoolean();
@@ -77,9 +77,15 @@ public class RequestSessionActorWrapper implements RequestSession {
             };
         }
 
+        try{
+            requestActor = actorSystem.actorOf(RequestActor.props(requestSession, messageAggregator, lock).withMailbox("akka.actor.response-mailbox")
+                    , "MessageReceiver-" + requestSession.getName());
+        }catch (Exception e){
+            requestActor = actorSystem.actorOf(RequestActor.props(requestSession, messageAggregator, lock)
+                    , "MessageReceiver-" + requestSession.getName());
+        }
 
-        requestActor = actorSystem.actorOf(RequestActor.props(requestSession, messageAggregator, lock)
-                , "MessageReceiver-" + requestSession.getName());
+
         requestSession.getChannelRequest().getChannelContext().channel().closeFuture().addListener(future -> {
             ActorUtil.gracefulReadyStop(requestActor);
         });

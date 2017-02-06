@@ -1,4 +1,4 @@
-package com.ob.common.actor;
+package com.ob.common.akka;
 
 import akka.actor.ActorRef;
 import akka.pattern.Patterns;

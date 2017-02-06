@@ -1,6 +1,6 @@
 package com.ob.server.http;
 
-import com.ob.common.actor.WithActorService;
+import com.ob.common.akka.WithActorService;
 import com.ob.server.ServerLogger;
 import com.ob.server.actor.RequestSessionActorWrapper;
 import com.ob.server.resolvers.ChannelRequest;

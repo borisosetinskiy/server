@@ -22,7 +22,7 @@ public class HeartBeatServiceImpl implements HeartBeatService {
     public void startUp(){
         scheduler = Executors.newSingleThreadScheduledExecutor(new TFactory());
         scheduler.scheduleWithFixedDelay(()->{
-            sessions.values().parallelStream().forEach(s -> {
+            sessions.values().forEach(s -> {
                 try{
                     s.heartBeat();
                 }catch (Exception ex){}
