@@ -5,6 +5,7 @@ import akka.actor.ActorSystem;
 import com.ob.common.akka.ActorUtil;
 import com.ob.common.data.Key;
 import com.ob.server.MessageAggregator;
+import com.ob.server.http.FlashResponseMessage;
 import com.ob.server.http.RequestSession;
 import com.ob.server.resolvers.ChannelRequest;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -94,10 +95,14 @@ public class RequestSessionActorWrapper implements RequestSession {
 
     @Override
     public void onWrite(Object message) {
-        messageAggregator.add(message);
-        if( !lock.getAndSet(true) &&
-            !requestActor.isTerminated()){
-            requestActor.tell(RequestActor.Received.i, requestActor);
+        if(message instanceof FlashResponseMessage){
+            requestSession.onWrite(message);
+        }{
+            messageAggregator.add(message);
+            if( !lock.getAndSet(true) &&
+                    !requestActor.isTerminated()){
+                requestActor.tell(RequestActor.Received.i, requestActor);
+            }
         }
     }
 

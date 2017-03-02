@@ -14,13 +14,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class RequestActor extends UntypedActor {
     private final RequestSession session;
-    private final MessageAggregator messages;
+    private final MessageAggregator messageAggregator;
     private final AtomicBoolean lock;
 
 
-    public RequestActor(final RequestSession session, MessageAggregator messages, AtomicBoolean lock) {
+    public RequestActor(final RequestSession session, MessageAggregator messageAggregator, AtomicBoolean lock) {
         this.session = session;
-        this.messages = messages;
+        this.messageAggregator = messageAggregator;
         this.lock = lock;
         session.getChannelRequest().getChannelContext().channel().closeFuture().addListener(future -> {
             context().stop(self());
@@ -42,7 +42,7 @@ public class RequestActor extends UntypedActor {
         try {
             if(message instanceof Received) {
                 try{
-                    session.onWrite(messages.flash());
+                    session.onWrite(messageAggregator.flash());
                 }finally {
                     lock.set(false);
                 }
