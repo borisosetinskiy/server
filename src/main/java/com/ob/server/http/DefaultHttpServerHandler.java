@@ -25,7 +25,7 @@ class DefaultHttpServerHandler extends SimpleChannelInboundHandler<Object> {
        try {
            if (msg instanceof HttpObject) {
                if (handler == null || !handler.connected)
-                   handler = HttpConnect.state(msg, handler);
+                   handler = HttpConnect.state(msg, handler,ctx.channel().id().asShortText());
 
                if (handler != null && handler.connected) {
                    ChannelUtil.channelRequest(ctx, handler.context, responderResolver);

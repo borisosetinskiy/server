@@ -10,14 +10,14 @@ import com.ob.server.resolvers.ChannelRequest;
  */
 public class HeartBeatRequestSession implements RequestSession, HeartBeat{
 
-    final Object heartBeat;
+    final HeartBeatFactory heartBeatFactory;
     final int timeFrame;
     private RequestSession requestSession;
     public HeartBeatRequestSession(RequestSession requestSession
-            , Object heartBeat, int timeFrame) {
+            , HeartBeatFactory heartBeatFactory, int timeFrame) {
         assert requestSession != null;
         this.requestSession = requestSession;
-        this.heartBeat = heartBeat;
+        this.heartBeatFactory = heartBeatFactory;
         this.timeFrame = timeFrame;
     }
 
@@ -80,7 +80,7 @@ public class HeartBeatRequestSession implements RequestSession, HeartBeat{
     @Override
     public void onWrite(Object message) {
         requestSession.onWrite(message);
-        if(message instanceof MessageAggregator || heartBeat.equals(message)){
+        if(message instanceof MessageAggregator){
             lastOperation();
         }
     }
@@ -92,7 +92,9 @@ public class HeartBeatRequestSession implements RequestSession, HeartBeat{
 
     @Override
     public void heartBeat() {
-        if(System.currentTimeMillis()- lastOperation >= timeFrame)
-            onWrite(heartBeat);
+        if(System.currentTimeMillis()- lastOperation >= timeFrame) {
+            onWrite(heartBeatFactory.create());
+            lastOperation();
+        }
     }
 }

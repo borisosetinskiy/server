@@ -25,7 +25,9 @@ public class HeartBeatServiceImpl implements HeartBeatService {
             sessions.values().forEach(s -> {
                 try{
                     s.heartBeat();
-                }catch (Exception ex){}
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
             });
         }, 0, 1, TimeUnit.SECONDS);
     }

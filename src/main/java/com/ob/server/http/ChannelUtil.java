@@ -1,6 +1,5 @@
 package com.ob.server.http;
 
-import com.ob.server.ServerLogger;
 import com.ob.server.resolvers.ChannelRequest;
 import com.ob.server.resolvers.Responder;
 import com.ob.server.resolvers.ResponderResolver;
@@ -38,7 +37,6 @@ public class ChannelUtil {
             if (responder != null) {
                 requestSession = responder.respond(channelRequest);
             }
-            ServerLogger.logger.debug(channelRequest.toString());
         }
         return requestSession;
 

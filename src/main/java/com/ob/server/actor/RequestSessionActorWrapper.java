@@ -156,4 +156,9 @@ public class RequestSessionActorWrapper implements RequestSession {
         return requestSession;
     }
 
+
+    @Override
+    public String toString() {
+        return requestSession!=null?requestSession.getName():super.toString();
+    }
 }

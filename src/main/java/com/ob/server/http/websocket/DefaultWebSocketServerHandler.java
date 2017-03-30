@@ -30,7 +30,7 @@ public class DefaultWebSocketServerHandler extends WebSocketServerHandler {
     protected void decode0(ChannelHandlerContext ctx, Object msg, List<Object> out){
         if (msg instanceof HttpObject) {
             if (handler == null)
-                handler = HttpConnect.state(msg, handler);
+                handler = HttpConnect.state(msg, handler, ctx.channel().id().asShortText());
         }
 
     }

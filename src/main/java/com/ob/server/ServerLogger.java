@@ -8,4 +8,5 @@ import org.slf4j.LoggerFactory;
  */
 public class ServerLogger {
     public static final Logger logger = LoggerFactory.getLogger(ServerLogger.class);
+    public static final Logger agentLogger = LoggerFactory.getLogger("com.ob.server.agent");
 }

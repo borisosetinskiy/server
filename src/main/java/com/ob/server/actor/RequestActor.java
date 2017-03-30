@@ -48,7 +48,7 @@ public class RequestActor extends UntypedActor {
                 }
             }
         } catch (Exception e) {
-            ServerLogger.logger.debug(e.toString());
+            ServerLogger.logger.error(e.toString());
         }
     }
 
@@ -60,7 +60,6 @@ public class RequestActor extends UntypedActor {
     @Override
     public void postStop()throws Exception{
         session.onClose();
-        ServerLogger.logger.debug("Session:"+session.getName()+" is stopping...");
     }
 
 

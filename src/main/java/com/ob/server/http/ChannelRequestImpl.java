@@ -11,6 +11,7 @@ import java.util.Arrays;
 public class ChannelRequestImpl implements ChannelRequest {
    private ChannelHandlerContext ctx;
    private Object2ObjectArrayMap<String, String> context;
+   private long timestamp = System.currentTimeMillis();
 
    public ChannelRequestImpl(ChannelHandlerContext ctx, Object2ObjectArrayMap context) {
       this.ctx = ctx;
@@ -23,11 +24,18 @@ public class ChannelRequestImpl implements ChannelRequest {
    public Object2ObjectArrayMap<String, String> getContext() {
       return context;
    }
+
+   @Override
+   public long getTimestamp() {
+      return timestamp;
+   }
+
    @Override
    public String toString() {
       final StringBuilder builder = new StringBuilder();
-      builder.append("ChannelRequestImpl{ctx=").append(ctx).append(", context=");
-      builder.append(Arrays.toString(context.keySet().toArray())).append(':').append(Arrays.toString(context.values().toArray())).append('}');
+      builder.append("{channel=").append(ctx.channel()).append(", context=");
+      builder.append(Arrays.toString(context.keySet().toArray())).append(':')
+              .append(Arrays.toString(context.values().toArray())).append('}');
       return  builder.toString();
    }
 
