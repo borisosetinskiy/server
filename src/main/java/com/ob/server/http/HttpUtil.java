@@ -2,10 +2,13 @@ package com.ob.server.http;
 
 
 import com.ob.server.resolvers.ChannelRequest;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -39,6 +42,10 @@ public final class HttpUtil {
       }
       return context;
    }
+   public static Object safeDuplicate(Object message) {
+      return message instanceof ByteBuf ?((ByteBuf)message).retainedDuplicate():(message instanceof ByteBufHolder ?((ByteBufHolder)message).retainedDuplicate(): ReferenceCountUtil.retain(message));
+   }
+
 
 
 }

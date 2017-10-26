@@ -25,14 +25,22 @@ public class NettyServer {
    private static final int WRITE_BUFFER_HIGH_WATER_MARK = 256 * KB;
    private static final int WRITE_BUFFER_LOW_WATER_MARK = 64 * KB;
    private static final int RECEIVE_BUFFER_SIZE = 256 * KB;
+   //ChannelMatchers
 
    private final ServerConfig config;
 
    private InitializerFactory initializerFactory;
-   private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+   private final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
    private EventLoopGroup bossGroup;
-   private static final EventLoopGroup workerGroup= new NioEventLoopGroup();
+   private final EventLoopGroup workerGroup = new NioEventLoopGroup();
    private ChannelFuture future;
+
+   public void setServerShutdown(ServerShutdown serverShutdown) {
+      this.serverShutdown = serverShutdown;
+   }
+
+   private ServerShutdown serverShutdown;
+
    public NettyServer(ServerConfig config) {
       this.config = config;
    }
@@ -49,6 +57,9 @@ public class NettyServer {
 
       bossGroup = new NioEventLoopGroup(1);
       ServerBootstrap bootstrap = new ServerBootstrap();
+      if(serverShutdown!=null){
+         serverShutdown.setChannelGroup(allChannels);
+      }
 
       bootstrap.group(bossGroup, workerGroup)
               .channel(NioServerSocketChannel.class)
@@ -72,14 +83,16 @@ public class NettyServer {
    }
 //   @PreDestroy
    public void shutDown() throws Exception {
+      if(serverShutdown != null){
+         serverShutdown.shutDown();
+      }
       bossGroup.shutdownGracefully();
-   }
-
-   public static void shutDownStatic(){
       ChannelGroupFuture future = allChannels.close();
       future.awaitUninterruptibly();
       workerGroup.shutdownGracefully();
    }
+
+
 
    @Override
    public String toString() {

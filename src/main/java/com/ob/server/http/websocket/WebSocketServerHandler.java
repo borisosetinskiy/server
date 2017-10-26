@@ -66,31 +66,33 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
     private final boolean allowExtensions;
     private final int maxFramePayloadLength;
     private final boolean allowMaskMismatch;
+    private final AccessHandler accessHandler;
 
-    public WebSocketServerHandler(String webSocketPath) {
-        this(webSocketPath, null, false);
+    public WebSocketServerHandler(String webSocketPath, AccessHandler accessHandler) {
+        this(webSocketPath, null, false, accessHandler);
     }
 
-    public WebSocketServerHandler(String webSocketPath, String subprotocols) {
-        this(webSocketPath, subprotocols, false);
+    public WebSocketServerHandler(String webSocketPath, String subprotocols, AccessHandler accessHandler) {
+        this(webSocketPath, subprotocols, false, accessHandler);
     }
 
-    public WebSocketServerHandler(String webSocketPath, String subprotocols, boolean allowExtensions) {
-        this(webSocketPath, subprotocols, allowExtensions, 65536);
-    }
-
-    public WebSocketServerHandler(String webSocketPath, String subprotocols,
-                                          boolean allowExtensions, int maxFrameSize) {
-        this(webSocketPath, subprotocols, allowExtensions, maxFrameSize, false);
+    public WebSocketServerHandler(String webSocketPath, String subprotocols, boolean allowExtensions, AccessHandler accessHandler) {
+        this(webSocketPath, subprotocols, allowExtensions, 65536, accessHandler);
     }
 
     public WebSocketServerHandler(String webSocketPath, String subprotocols,
-                                          boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+                                          boolean allowExtensions, int maxFrameSize, AccessHandler accessHandler) {
+        this(webSocketPath, subprotocols, allowExtensions, maxFrameSize, false,accessHandler);
+    }
+
+    public WebSocketServerHandler(String webSocketPath, String subprotocols,
+                                          boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch, AccessHandler accessHandler) {
         this.websocketPath = webSocketPath;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;
         maxFramePayloadLength = maxFrameSize;
         this.allowMaskMismatch = allowMaskMismatch;
+        this.accessHandler = accessHandler;
     }
 
     @Override
@@ -106,6 +108,9 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
 
     protected void decodeWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> out){
         if (frame instanceof CloseWebSocketFrame) {
+            CloseWebSocketFrame closeWebSocketFrame = (CloseWebSocketFrame)frame;
+            ServerLogger.loggerWebSocket.debug(String.format("Channel %s, CloseWebSocketFrame %s, %s", ctx.channel().id().asShortText(), closeWebSocketFrame.statusCode()
+                    , closeWebSocketFrame.reasonText()));
             WebSocketServerHandshaker handshaker = getHandshaker(ctx.channel());
             if (handshaker != null) {
                 frame.retain();
@@ -131,7 +136,7 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
             // Add the WebSocketHandshakeHandler before this one.
             ctx.pipeline().addBefore(ctx.name(), WebSocketServerProtocolHandshakeHandler.class.getName(),
                     new WebSocketServerProtocolHandshakeHandler(websocketPath, subprotocols,
-                            allowExtensions, maxFramePayloadLength, allowMaskMismatch));
+                            allowExtensions, maxFramePayloadLength, allowMaskMismatch, accessHandler));
         }
         if (cp.get(Utf8FrameValidator.class) == null) {
             // Add the UFT8 checking before this one.
@@ -143,16 +148,11 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if (cause instanceof WebSocketHandshakeException) {
-            FullHttpResponse response = new DefaultFullHttpResponse(
-                    HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.wrappedBuffer(cause.getMessage().getBytes()));
-            ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-        } else {
-            ctx.close();
-        }
-        ServerLogger.logger.debug(cause.getMessage());
+        WebSocketUtil.onError(ctx, cause);
 
     }
+
+
 
     static WebSocketServerHandshaker getHandshaker(Channel channel) {
         return channel.attr(HANDSHAKER_ATTR_KEY).get();

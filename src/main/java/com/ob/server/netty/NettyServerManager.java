@@ -28,9 +28,13 @@ public class NettyServerManager {
 
     public void shutDown()throws Exception{
         for(NettyServer server  : servers) {
-            server.shutDown();
+            try {
+                server.shutDown();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             ServerLogger.logger.debug("Stopping..."+server);
         }
-        NettyServer.shutDownStatic();
+
     }
 }

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -17,20 +22,21 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:20.0" level="project" />
     <orderEntry type="library" name="Maven: com.lmax:disruptor:3.3.6" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-actor_2.11:2.4.16" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.8" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-actor_2.12:2.4.16" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.12.1" level="project" />
     <orderEntry type="library" name="Maven: com.typesafe:config:1.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-java8-compat_2.11:0.7.0" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec-xml:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.6.Final" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.6.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-java8-compat_2.12:0.8.0" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-xml:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.14.Final" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml:aalto-xml:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:stax2-api:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.6.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.14.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.ob:multi-provider-event-service:1.0.18" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.13" level="project" />
     <orderEntry type="library" name="Maven: javax.transaction:jta:1.1" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.6" level="project" />
@@ -40,11 +46,11 @@
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.7" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.7" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.3.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-core:4.3.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:4.3.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:4.3.5.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-core:4.3.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.5.RELEASE" level="project" />
   </component>
 </module>

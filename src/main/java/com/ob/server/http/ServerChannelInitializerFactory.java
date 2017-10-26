@@ -3,6 +3,7 @@ package com.ob.server.http;
 
 import com.ob.server.InitializerFactory;
 import com.ob.server.ServerConfig;
+import com.ob.server.http.websocket.AccessHandler;
 import com.ob.server.http.websocket.WebSocketServerInitializer;
 import com.ob.server.resolvers.ResponderResolver;
 import io.netty.channel.ChannelInitializer;
@@ -14,6 +15,12 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class ServerChannelInitializerFactory implements InitializerFactory {
     private ResponderResolver resolver;
+    private AccessHandler accessHandler = AccessHandler.EMPTY;
+
+    @Required
+    public void setAccessHandler(AccessHandler accessHandler) {
+        this.accessHandler = accessHandler;
+    }
 
     @Required
     public void setResolver(ResponderResolver resolver) {
@@ -23,7 +30,7 @@ public class ServerChannelInitializerFactory implements InitializerFactory {
     @Override
     public ChannelInitializer createInitializer(ServerConfig config, ChannelGroup allChannels) {
         if(config.getWsPath()!=null){
-            return new WebSocketServerInitializer(config, resolver, allChannels);
+            return new WebSocketServerInitializer(config, resolver, allChannels, accessHandler);
         }else {
             return new HttpChannelInitializer(config, resolver, allChannels);
         }

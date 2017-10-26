@@ -9,7 +9,6 @@ import io.netty.handler.ssl.SslHandler;
 
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
-import static io.netty.handler.codec.http.HttpUtil.isKeepAlive;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -22,14 +21,16 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
+    private final AccessHandler accessHandler;
 
     WebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
-                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch, AccessHandler accessHandler) {
         this.websocketPath = websocketPath;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;
         maxFramePayloadSize = maxFrameSize;
         this.allowMaskMismatch = allowMaskMismatch;
+        this.accessHandler = accessHandler;
     }
 
     @Override
@@ -43,8 +44,8 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
         }
         ctx.fireChannelRead(req.retain());
         try {
-            if (req.method() != GET) {
-                sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN));
+            if (req.method() != GET || !accessHandler.handle(req)) {
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN)).addListener(ChannelFutureListener.CLOSE);
                 return;
             }
 
@@ -81,12 +82,7 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
         }
     }
 
-    private static void sendHttpResponse(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res) {
-        ChannelFuture f = ctx.channel().writeAndFlush(res);
-        if (!isKeepAlive(req) || res.status().code() != 200) {
-            f.addListener(ChannelFutureListener.CLOSE);
-        }
-    }
+
 
     private static String getWebSocketLocation(ChannelPipeline cp, HttpRequest req, String path) {
         String protocol = "ws";

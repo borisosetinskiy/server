@@ -1,7 +1,7 @@
 package com.ob.server.http.websocket;
 
 
-import com.ob.server.http.RequestSession;
+import com.ob.server.session.RequestSession;
 
 /**
  * Created by boris on 30.06.2016.

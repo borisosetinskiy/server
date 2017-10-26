@@ -31,14 +31,16 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
  */
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    ServerConfig config;
-    ResponderResolver responderResolver;
-    ChannelGroup allChannels;
+    final ServerConfig config;
+    final ResponderResolver responderResolver;
+    final ChannelGroup allChannels;
+    final AccessHandler accessHandler;
 
-    public WebSocketServerInitializer(ServerConfig config, ResponderResolver responderResolver, ChannelGroup allChannels) {
+    public WebSocketServerInitializer(ServerConfig config, ResponderResolver responderResolver, ChannelGroup allChannels, AccessHandler accessHandler) {
         this.config = config;
         this.responderResolver = responderResolver;
         this.allChannels = allChannels;
+        this.accessHandler = accessHandler;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());
-        pipeline.addLast(new DefaultWebSocketServerHandler(config.getWsPath(), responderResolver, allChannels));
+        pipeline.addLast(new DefaultWebSocketServerHandler(config.getWsPath(), responderResolver, allChannels, accessHandler));
         pipeline.addLast(new TextWebSocketServerHandler());
     }
 }

@@ -40,4 +40,13 @@ public class PrintUtil {
     private static void removeLastNewLine(StringBuilder buf) {
         buf.setLength(buf.length() - StringUtil.NEWLINE.length());
     }
+
+    public static String fromStack(Throwable cause){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(cause.getMessage());
+        for(StackTraceElement el : cause.getStackTrace()){
+            stringBuilder.append('\n').append(el);
+        }
+        return stringBuilder.toString();
+    }
 }
