@@ -13,8 +13,8 @@ public class HeartBeatRequestSession extends AbstractRequestSession implements H
     final int timeFrame;
     private volatile long lastOperation;
 
-    public HeartBeatRequestSession(String sessionId, String withDispatcher, String withMailbox, ChannelRequest channelRequest, HeartBeatFactory heartBeatFactory, int timeFrame) {
-        super(sessionId, withDispatcher, withMailbox, channelRequest);
+    public HeartBeatRequestSession(String sessionId, String withDispatcher, String withMailbox, ChannelRequest channelRequest, ResponseFormatter responseFormatter, HeartBeatFactory heartBeatFactory, int timeFrame) {
+        super(sessionId, withDispatcher, withMailbox, channelRequest, responseFormatter);
         this.heartBeatFactory = heartBeatFactory;
         this.timeFrame = timeFrame;
     }
@@ -41,7 +41,6 @@ public class HeartBeatRequestSession extends AbstractRequestSession implements H
 
     @Override
     public void onWrite(Object message) {
-        super.onWrite(message);
         lastOperation();
     }
 

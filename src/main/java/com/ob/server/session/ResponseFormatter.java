@@ -1,4 +1,4 @@
-package com.ob.server.resolvers;
+package com.ob.server.session;
 
 
 public interface ResponseFormatter<T1,T2> {

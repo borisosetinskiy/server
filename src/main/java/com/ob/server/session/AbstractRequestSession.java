@@ -17,11 +17,13 @@ public abstract class AbstractRequestSession extends AkkaEventLogic implements R
     protected final ChannelRequest channelRequest;
     protected String sessionId;
     protected EntryAggregator entryAggregator;
+    protected final ResponseFormatter responseFormatter;
     protected SessionParams sessionParams = SessionParams.EMPTY;
-    public AbstractRequestSession(String sessionId, String withDispatcher, String withMailbox, ChannelRequest channelRequest) {
+    public AbstractRequestSession(String sessionId, String withDispatcher, String withMailbox, ChannelRequest channelRequest, ResponseFormatter responseFormatter) {
         super(channelRequest.getChannelContext().channel().id().asShortText(),  withDispatcher, withMailbox);
         this.channelRequest = channelRequest;
         this.sessionId = sessionId;
+        this.responseFormatter = responseFormatter;
         channelRequest.getChannelContext().channel().closeFuture().addListener(future -> {
             try {
                 release();
@@ -48,7 +50,7 @@ public abstract class AbstractRequestSession extends AkkaEventLogic implements R
                     entryAggregator.add(message);
                 }
             }
-            onWrite(message);
+            onWrite(responseFormatter.format(message));
 
         } catch (Exception e) {
             ServerLogger.loggerWrite.error(String.format("Session %s, error %s, message %s", getSessionId(), e.getMessage(), message));
