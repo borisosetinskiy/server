@@ -47,7 +47,7 @@ public final class ServerConfig {
    }
 
    public void setKeyFile(String key) {
-      System.out.println("Key file:"+key);
+      System.out.println("Entry file:"+key);
       if(ssl) {
          this.keyFile = new File(key);
          Assert.isTrue(keyFile.exists());
