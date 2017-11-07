@@ -31,7 +31,6 @@ public class HttpChannelInitializer extends ChannelInitializer<SocketChannel> {
     }
     @Override
     public void initChannel(SocketChannel ch) {
-
         ChannelPipeline pipeline = ch.pipeline();
         if(config.isSsl()){
             pipeline.addLast(config.getSslCtx().newHandler(ch.alloc()));

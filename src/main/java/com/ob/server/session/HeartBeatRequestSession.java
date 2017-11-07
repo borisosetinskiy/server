@@ -13,8 +13,8 @@ public class HeartBeatRequestSession extends AbstractRequestSession implements H
     final int timeFrame;
     private volatile long lastOperation;
 
-    public HeartBeatRequestSession(String sessionId, String withDispatcher, String withMailbox, ChannelRequest channelRequest, ResponseFormatter responseFormatter, HeartBeatFactory heartBeatFactory, int timeFrame) {
-        super(sessionId, withDispatcher, withMailbox, channelRequest, responseFormatter);
+    public HeartBeatRequestSession(String sessionId, String withDispatcher, String withMailbox, ChannelRequest channelRequest, ResponseTransformer responseTransformer, HeartBeatFactory heartBeatFactory, int timeFrame) {
+        super(sessionId, withDispatcher, withMailbox, channelRequest, responseTransformer);
         this.heartBeatFactory = heartBeatFactory;
         this.timeFrame = timeFrame;
     }

@@ -31,8 +31,8 @@ public class NettyServer {
 
    private InitializerFactory initializerFactory;
    private final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-   private EventLoopGroup bossGroup;
-   private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+   private static final EventLoopGroup bossGroup =new NioEventLoopGroup(1);
+   private static final EventLoopGroup workerGroup = new NioEventLoopGroup();
    private ChannelFuture future;
 
    public void setServerShutdown(ServerShutdown serverShutdown) {
@@ -55,7 +55,6 @@ public class NettyServer {
 //   @PostConstruct
    public void startUp() throws Exception {
 
-      bossGroup = new NioEventLoopGroup(1);
       ServerBootstrap bootstrap = new ServerBootstrap();
       if(serverShutdown!=null){
          serverShutdown.setChannelGroup(allChannels);
@@ -73,12 +72,8 @@ public class NettyServer {
               .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(WRITE_BUFFER_LOW_WATER_MARK, WRITE_BUFFER_HIGH_WATER_MARK))
               .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-      try{
-         future = bootstrap.bind(config.getPort());
 
-      }catch(Exception e){
-         throw e;
-      }
+      future = bootstrap.bind(config.getPort());
       allChannels.add(future.channel());
    }
 //   @PreDestroy
@@ -86,10 +81,18 @@ public class NettyServer {
       if(serverShutdown != null){
          serverShutdown.shutDown();
       }
-      bossGroup.shutdownGracefully();
-      ChannelGroupFuture future = allChannels.close();
-      future.awaitUninterruptibly();
-      workerGroup.shutdownGracefully();
+      try {
+         ChannelGroupFuture future = allChannels.close();
+         future.awaitUninterruptibly();
+      }catch (Exception e){}
+      try {
+         if(!bossGroup.isShutdown())
+            bossGroup.shutdownGracefully();
+      }catch (Exception e){}
+      try {
+         if(!workerGroup.isShutdown())
+            workerGroup.shutdownGracefully();
+      }catch (Exception e){}
    }
 
 

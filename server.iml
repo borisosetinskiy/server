@@ -37,6 +37,29 @@
     <orderEntry type="library" name="Maven: org.codehaus.woodstox:stax2-api:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.14.Final" level="project" />
     <orderEntry type="library" name="Maven: com.ob:multi-provider-event-service:1.0.18" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-cluster_2.12:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-remote_2.12:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-stream_2.12:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe:ssl-config-core_2.12:0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-parser-combinators_2.12:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-protobuf_2.12:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty:3.10.6.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.aeron:aeron-driver:1.2.5" level="project" />
+    <orderEntry type="library" name="Maven: io.aeron:aeron-client:1.2.5" level="project" />
+    <orderEntry type="library" name="Maven: org.agrona:agrona:0.9.5" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-distributed-data_2.12:2.5.4" level="project" />
+    <orderEntry type="library" name="Maven: org.lmdbjava:lmdbjava:0.0.5" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jnr:jnr-ffi:2.1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jnr:jffi:1.2.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jffi:native:1.2.14" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm:5.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-commons:5.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-analysis:5.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:5.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm-util:5.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jnr:jnr-x86asm:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jnr:jnr-constants:0.9.6" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.13" level="project" />
     <orderEntry type="library" name="Maven: javax.transaction:jta:1.1" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.6" level="project" />

@@ -26,7 +26,7 @@ public class DefaultRequestService extends WithEventService implements RequestSe
 
 
     @Required
-    public void setRequestLogicFactory(RequestSessionFactory requestSessionFactory) {
+    public void setRequestSessionFactory(RequestSessionFactory requestSessionFactory) {
         this.requestSessionFactory = requestSessionFactory;
     }
 
