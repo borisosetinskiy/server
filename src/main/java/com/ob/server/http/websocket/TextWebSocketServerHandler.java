@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.ob.server.http.PrintUtil.fromStack;
-import static com.ob.server.http.websocket.AttributeKeys.ATTR_KEY;
+import static com.ob.server.http.AttributeKeys.REQUEST_SESSION_ATTR_KEY;
 
 /**
  * Created by boris on 12/26/2016.
@@ -27,7 +27,7 @@ public class TextWebSocketServerHandler extends MessageToMessageDecoder<TextWebS
                 ServerLogger.loggerMessage.debug("Channel {}, message {}"
                         , channelHandlerContext.channel().id().asShortText()
                 , msg);
-                final RequestSession requestSession = channelHandlerContext.channel().attr(ATTR_KEY).get();
+                final RequestSession requestSession = channelHandlerContext.channel().attr(REQUEST_SESSION_ATTR_KEY).get();
                 requestSession.onRead(msg);
             }
         }catch (Exception e){

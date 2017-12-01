@@ -17,8 +17,11 @@ public final class ServerConfig {
    private SslContext sslCtx;
    private File certFile;
    private File keyFile;
-   private String wsPath;
    private boolean cors;
+   private boolean withCompressor;
+   private boolean withAggregator = true;
+   private boolean withIdle;
+
 
    public SslContext getSslCtx() {
       return sslCtx;
@@ -54,12 +57,28 @@ public final class ServerConfig {
       }
    }
 
-   public String getWsPath() {
-      return wsPath;
+   public boolean isWithCompressor() {
+      return withCompressor;
    }
 
-   public void setWsPath(String wsPath) {
-      this.wsPath = wsPath;
+   public void setWithCompressor(boolean withCompressor) {
+      this.withCompressor = withCompressor;
+   }
+
+   public boolean isWithAggregator() {
+      return withAggregator;
+   }
+
+   public void setWithAggregator(boolean withAggregator) {
+      this.withAggregator = withAggregator;
+   }
+
+   public boolean isWithIdle() {
+      return withIdle;
+   }
+
+   public void setWithIdle(boolean withIdle) {
+      this.withIdle = withIdle;
    }
 
    public int getPort() {
@@ -115,8 +134,13 @@ public final class ServerConfig {
               ", allTimeoutSeconds=" + allTimeoutSeconds +
               ", writeTimeoutSeconds=" + writeTimeoutSeconds +
               ", ssl=" + ssl +
-              ", wsPath=" + wsPath +
+              ", sslCtx=" + sslCtx +
+              ", certFile=" + certFile +
+              ", keyFile=" + keyFile +
               ", cors=" + cors +
+              ", withCompressor=" + withCompressor +
+              ", withAggregator=" + withAggregator +
+              ", withIdle=" + withIdle +
               '}';
    }
 }

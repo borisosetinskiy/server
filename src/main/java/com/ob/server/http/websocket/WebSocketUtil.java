@@ -18,7 +18,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * Created by boris on 4/12/2017.
  */
 public class WebSocketUtil {
-    public static void onError(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public static void onError(ChannelHandlerContext ctx, Throwable cause) {
         try {
             if (cause instanceof WebSocketHandshakeException) {
                 FullHttpResponse response = new DefaultFullHttpResponse(
@@ -27,11 +27,17 @@ public class WebSocketUtil {
             } else if(cause instanceof AccessException){
                 ctx.channel().writeAndFlush(new CloseWebSocketFrame(4403, "403, Forbidden"))
                         .addListener(ChannelFutureListener.CLOSE);
-            }else{
-                ctx.close();
+            }else if(cause instanceof  UnsupportedOperationException){
+                ctx.channel().writeAndFlush(new CloseWebSocketFrame(1010, cause.getMessage()))
+                        .addListener(ChannelFutureListener.CLOSE);
             }
-        } finally {
-            ServerLogger.loggerProblem.error("WebSocket, channel {}, error {} ", ctx.channel().id().asShortText(), fromStack(cause));
+            else{
+                ctx.channel().writeAndFlush(new CloseWebSocketFrame(1011, cause.getMessage()))
+                        .addListener(ChannelFutureListener.CLOSE);
+            }
+        }catch (Exception e){}
+        finally {
+            ServerLogger.loggerProblem.error(String.format("WebSocket, channel %s, error ", ctx.channel().id().asShortText()), fromStack(cause));
 
         }
     }

@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 
 import java.util.Map;
 
-import static com.ob.server.http.HttpUtil.sendErrorAndCloseChannel;
+import static com.ob.server.http.HttpUtils.sendErrorAndCloseChannel;
 
 
 /**

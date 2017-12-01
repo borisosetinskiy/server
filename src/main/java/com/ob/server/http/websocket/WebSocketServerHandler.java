@@ -14,26 +14,6 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 
 public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
-
-
-
-    /**
-     * Events that are fired to notify about handshake status
-     */
-    public enum ServerHandshakeStateEvent {
-        /**
-         * The Handshake was completed successfully and the channel was upgraded to websockets.
-         *
-         * @deprecated in favor of {@link WebSocketServerProtocolHandler.HandshakeComplete} class,
-         * it provides extra information about the handshake
-         */
-        @Deprecated
-        HANDSHAKE_COMPLETE
-    }
-
-    /**
-     * The Handshake was completed successfully and the channel was upgraded to websockets.
-     */
     public static final class HandshakeComplete {
         private final String requestUri;
         private final HttpHeaders requestHeaders;
@@ -66,44 +46,49 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
     private final boolean allowExtensions;
     private final int maxFramePayloadLength;
     private final boolean allowMaskMismatch;
-    private final AccessHandler accessHandler;
+    private WebSocketServerProtocolHandshakeHandlerFactory webSocketServerProtocolHandshakeHandlerFactory
+            = new WebSocketServerProtocolHandshakeHandlerFactory(){
+        @Override
+        public WebSocketServerProtocolHandshakeHandler create(String websocketPath, String subprotocols, boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+            return new WebSocketServerProtocolHandshakeHandler(websocketPath, subprotocols,
+                    allowExtensions, maxFramePayloadLength, allowMaskMismatch);
+        }
+    };
 
-    public WebSocketServerHandler(String webSocketPath, AccessHandler accessHandler) {
-        this(webSocketPath, null, false, accessHandler);
+    public WebSocketServerHandler(String webSocketPath) {
+        this(webSocketPath, null, true);
     }
 
-    public WebSocketServerHandler(String webSocketPath, String subprotocols, AccessHandler accessHandler) {
-        this(webSocketPath, subprotocols, false, accessHandler);
+    public WebSocketServerHandler(String webSocketPath, String subprotocols) {
+        this(webSocketPath, subprotocols, true);
     }
 
-    public WebSocketServerHandler(String webSocketPath, String subprotocols, boolean allowExtensions, AccessHandler accessHandler) {
-        this(webSocketPath, subprotocols, allowExtensions, 65536, accessHandler);
+    public WebSocketServerHandler(String webSocketPath, String subprotocols, boolean allowExtensions) {
+        this(webSocketPath, subprotocols, allowExtensions, 65536);
     }
 
     public WebSocketServerHandler(String webSocketPath, String subprotocols,
-                                          boolean allowExtensions, int maxFrameSize, AccessHandler accessHandler) {
-        this(webSocketPath, subprotocols, allowExtensions, maxFrameSize, false,accessHandler);
+                                  boolean allowExtensions, int maxFrameSize) {
+        this(webSocketPath, subprotocols, allowExtensions, maxFrameSize, false);
     }
 
     public WebSocketServerHandler(String webSocketPath, String subprotocols,
-                                          boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch, AccessHandler accessHandler) {
+                                  boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
         this.websocketPath = webSocketPath;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;
         maxFramePayloadLength = maxFrameSize;
         this.allowMaskMismatch = allowMaskMismatch;
-        this.accessHandler = accessHandler;
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Object object, List<Object> out) throws Exception {
-        decode0(ctx, object, out);
         if (object instanceof WebSocketFrame) {
             decodeWebSocketFrame(ctx, (WebSocketFrame)object, out);
         }
     }
 
-    protected void decode0(ChannelHandlerContext ctx, Object object, List<Object> out){}
+
 
 
     protected void decodeWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> out){
@@ -135,8 +120,9 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
         if (cp.get(WebSocketServerProtocolHandshakeHandler.class) == null) {
             // Add the WebSocketHandshakeHandler before this one.
             ctx.pipeline().addBefore(ctx.name(), WebSocketServerProtocolHandshakeHandler.class.getName(),
-                    new WebSocketServerProtocolHandshakeHandler(websocketPath, subprotocols,
-                            allowExtensions, maxFramePayloadLength, allowMaskMismatch, accessHandler));
+                    webSocketServerProtocolHandshakeHandlerFactory.create(
+                            websocketPath, subprotocols,
+                            allowExtensions, maxFramePayloadLength, allowMaskMismatch));
         }
         if (cp.get(Utf8FrameValidator.class) == null) {
             // Add the UFT8 checking before this one.
@@ -154,15 +140,15 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
 
 
 
-    static WebSocketServerHandshaker getHandshaker(Channel channel) {
+    public static WebSocketServerHandshaker getHandshaker(Channel channel) {
         return channel.attr(HANDSHAKER_ATTR_KEY).get();
     }
 
-    static void setHandshaker(Channel channel, WebSocketServerHandshaker handshaker) {
+    public static void setHandshaker(Channel channel, WebSocketServerHandshaker handshaker) {
         channel.attr(HANDSHAKER_ATTR_KEY).set(handshaker);
     }
 
-    static ChannelHandler forbiddenHttpRequestResponder() {
+    public static ChannelHandler forbiddenHttpRequestResponder() {
         return new ChannelInboundHandlerAdapter() {
             @Override
             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

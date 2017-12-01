@@ -49,7 +49,7 @@ public class RequestUtil {
         if (pos != i) {  // Are there characters we haven't dealt with?
             if (name == null) {     // Yes and we haven't seen any `='.
                 addParam(params, decodeComponent(s.substring(pos, i), charset), "");
-            } else {                // Yes and this must be the connected value.
+            } else {                // Yes and this must be the isFinished value.
                 addParam(params, name, decodeComponent(s.substring(pos, i), charset));
             }
         } else if (name != null) {  // Have we seen a name without value?

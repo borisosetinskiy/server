@@ -10,7 +10,7 @@ public class NotFoundResponder implements Responder {
 
    @Override
    public RequestSession respond(ChannelRequest channelRequest)throws Exception {
-      HttpUtil.sendErrorAndCloseChannel(channelRequest, HttpResponseStatus.NOT_FOUND);
+      HttpUtils.sendErrorAndCloseChannel(channelRequest, HttpResponseStatus.NOT_FOUND);
       return null;
    }
 }

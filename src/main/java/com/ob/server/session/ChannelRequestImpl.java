@@ -2,20 +2,41 @@ package com.ob.server.session;
 
 
 
+import com.ob.server.http.HttpUtils;
 import com.ob.server.resolvers.ChannelRequest;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.LastHttpContent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ChannelRequestImpl implements ChannelRequest {
-   private ChannelHandlerContext ctx;
-   private Object2ObjectArrayMap<String, String> context;
+   private final ChannelHandlerContext ctx;
+   private Object2ObjectArrayMap<String, String> context = new Object2ObjectArrayMap();
    private long timestamp = System.currentTimeMillis();
 
-   public ChannelRequestImpl(ChannelHandlerContext ctx, Object2ObjectArrayMap context) {
+   public ChannelRequestImpl(ChannelHandlerContext ctx) {
       this.ctx = ctx;
-      this.context = context;
+   }
+
+   private AtomicBoolean finished = new AtomicBoolean();
+   public boolean isFinished() {
+      return finished.get();
+   }
+
+   public void handle(Object msg) {
+      if(!isFinished()) {
+         if (msg instanceof HttpRequest) {
+            context = HttpUtils.params((HttpObject)msg, context);
+         }
+         if (msg instanceof LastHttpContent) {
+            HttpUtils.params((HttpObject)msg, context);
+            finished.set(true);
+         }
+      }
    }
    public ChannelHandlerContext getChannelContext() {
       return ctx;

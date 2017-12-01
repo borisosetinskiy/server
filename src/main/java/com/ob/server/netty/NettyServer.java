@@ -25,6 +25,7 @@ public class NettyServer {
    private static final int WRITE_BUFFER_HIGH_WATER_MARK = 256 * KB;
    private static final int WRITE_BUFFER_LOW_WATER_MARK = 64 * KB;
    private static final int RECEIVE_BUFFER_SIZE = 256 * KB;
+   private static final int SEND_BUFFER_SIZE = 256 * KB;
    //ChannelMatchers
 
    private final ServerConfig config;
@@ -67,7 +68,7 @@ public class NettyServer {
               .option(ChannelOption.SO_REUSEADDR, true)
               .option(ChannelOption.SO_BACKLOG, KB)
               .childOption(ChannelOption.SO_RCVBUF, RECEIVE_BUFFER_SIZE)
-              .childOption(ChannelOption.SO_SNDBUF, KB * KB)
+              .childOption(ChannelOption.SO_SNDBUF, SEND_BUFFER_SIZE)
               .childOption(ChannelOption.TCP_NODELAY, true)
               .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(WRITE_BUFFER_LOW_WATER_MARK, WRITE_BUFFER_HIGH_WATER_MARK))
               .childOption(ChannelOption.SO_KEEPALIVE, true);

@@ -5,6 +5,7 @@ import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
 
 import static io.netty.handler.codec.http.HttpMethod.GET;
@@ -21,16 +22,19 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
-    private final AccessHandler accessHandler;
 
-    WebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
-                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch, AccessHandler accessHandler) {
+
+    public WebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
+                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
         this.websocketPath = websocketPath;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;
         maxFramePayloadSize = maxFrameSize;
         this.allowMaskMismatch = allowMaskMismatch;
-        this.accessHandler = accessHandler;
+    }
+
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+
     }
 
     @Override
@@ -42,9 +46,9 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
             ctx.fireChannelRead(msg);
             return;
         }
-        ctx.fireChannelRead(req.retain());
+        channelRead0(ctx, msg);
         try {
-            if (req.method() != GET || !accessHandler.handle(req)) {
+            if (req.method() != GET ) {
                 ctx.channel().writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN)).addListener(ChannelFutureListener.CLOSE);
                 return;
             }
@@ -65,7 +69,7 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
                         } else {
                             // Kept for compatibility
                             ctx.fireUserEventTriggered(
-                                    WebSocketServerHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE);
+                                    WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE);
                             ctx.fireUserEventTriggered(
                                     new WebSocketServerHandler.HandshakeComplete(
                                             req.uri(), req.headers(), handshaker.selectedSubprotocol()));
