@@ -5,5 +5,5 @@ package com.ob.server.session;
  */
 public interface Throttler {
     void add(Object key);
-    boolean isExpired(Object key);
+    boolean isExpired(Object key, int time);
 }

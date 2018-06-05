@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 public interface ChannelRequest {
-    ChannelHandlerContext getChannelContext();
     Object2ObjectArrayMap<String, String> getContext();
     long getTimestamp();
+    ChannelHandlerContext getChannelContext();
 }

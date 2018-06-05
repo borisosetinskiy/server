@@ -4,14 +4,15 @@ package com.ob.server.netty;
 import com.ob.server.InitializerFactory;
 import com.ob.server.ServerConfig;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -32,8 +33,8 @@ public class NettyServer {
 
    private InitializerFactory initializerFactory;
    private final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-   private static final EventLoopGroup bossGroup =new NioEventLoopGroup(1);
-   private static final EventLoopGroup workerGroup = new NioEventLoopGroup();
+   private EventLoopGroup bossGroup;
+   private EventLoopGroup workerGroup;
    private ChannelFuture future;
 
    public void setServerShutdown(ServerShutdown serverShutdown) {
@@ -44,9 +45,10 @@ public class NettyServer {
 
    public NettyServer(ServerConfig config) {
       this.config = config;
+      bossGroup = ServerConfig.getBossGroup();
+      workerGroup = ServerConfig.getWorkerGroup();
+
    }
-
-
 
    @Required
    public void setInitializerFactory(InitializerFactory initializerFactory) {
@@ -61,9 +63,15 @@ public class NettyServer {
          serverShutdown.setChannelGroup(allChannels);
       }
 
-      bootstrap.group(bossGroup, workerGroup)
-              .channel(NioServerSocketChannel.class)
-              .handler(new LoggingHandler(LogLevel.DEBUG))
+      bootstrap.group(bossGroup, workerGroup);
+      if(config.isEpoll()) {
+         bootstrap.channel(EpollServerSocketChannel.class);
+      }else  {
+         bootstrap.channel(NioServerSocketChannel.class);
+      }
+
+      bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+      bootstrap.handler(new LoggingHandler(LogLevel.WARN))
               .childHandler(initializerFactory.createInitializer(config, allChannels))
               .option(ChannelOption.SO_REUSEADDR, true)
               .option(ChannelOption.SO_BACKLOG, KB)
@@ -95,8 +103,6 @@ public class NettyServer {
             workerGroup.shutdownGracefully();
       }catch (Exception e){}
    }
-
-
 
    @Override
    public String toString() {

@@ -7,6 +7,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
@@ -85,6 +86,8 @@ public class WebSocketServerHandler extends MessageToMessageDecoder<Object> {
     protected void decode(ChannelHandlerContext ctx, Object object, List<Object> out) throws Exception {
         if (object instanceof WebSocketFrame) {
             decodeWebSocketFrame(ctx, (WebSocketFrame)object, out);
+        }else  if (object instanceof HttpObject) {
+            out.add(ReferenceCountUtil.retain(object));
         }
     }
 

@@ -4,11 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultThrottler implements Throttler {
-    private final int throttleTime;
+
     private Map<Object, Timing> timings = new ConcurrentHashMap();
-    public DefaultThrottler(int throttleTime) {
-        this.throttleTime = throttleTime;
-    }
+
     @Override
     public void add(Object o) {
         Timing timing = timings.get(o);
@@ -19,9 +17,9 @@ public class DefaultThrottler implements Throttler {
         timing.update();
     }
     @Override
-    public boolean isExpired(Object key) {
+    public boolean isExpired(Object key, int time) {
         Timing timing = timings.get(key);
         if(timing == null) return false;
-        return timing.isExpired(throttleTime);
+        return timing.isExpired(time);
     }
 }

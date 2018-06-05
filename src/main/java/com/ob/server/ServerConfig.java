@@ -1,11 +1,16 @@
 package com.ob.server;
 
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.Assert;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Created by boris on 19.04.2016.
  */
@@ -18,17 +23,45 @@ public final class ServerConfig {
    private File certFile;
    private File keyFile;
    private boolean cors;
-   private boolean withCompressor;
-   private boolean withAggregator = true;
-   private boolean withIdle;
 
+   private static boolean epoll;
+   private static AtomicBoolean init = new AtomicBoolean();
+   private static EventLoopGroup bossGroup;
+   private static EventLoopGroup workerGroup;
+
+
+   public static boolean isEpoll() {
+      return epoll;
+   }
 
    public SslContext getSslCtx() {
       return sslCtx;
    }
 
 
+   public static void init(boolean e){
+      epoll = e;
+      if(epoll) {
+         bossGroup = new EpollEventLoopGroup(1);
+         workerGroup = new EpollEventLoopGroup();
+      }else{
+         bossGroup = new NioEventLoopGroup(1);
+         workerGroup = new NioEventLoopGroup();
+      }
+      init.set(true);
+   }
+
+   public static EventLoopGroup getBossGroup() {
+      return bossGroup;
+   }
+
+   public static EventLoopGroup getWorkerGroup() {
+      return workerGroup;
+   }
+
    public void init() {
+      if(!init.get())
+         throw new RuntimeException("Static context not initialized!!!");
       if(ssl){
          Assert.notNull(certFile);
          Assert.notNull(keyFile);
@@ -57,29 +90,29 @@ public final class ServerConfig {
       }
    }
 
-   public boolean isWithCompressor() {
-      return withCompressor;
-   }
-
-   public void setWithCompressor(boolean withCompressor) {
-      this.withCompressor = withCompressor;
-   }
-
-   public boolean isWithAggregator() {
-      return withAggregator;
-   }
-
-   public void setWithAggregator(boolean withAggregator) {
-      this.withAggregator = withAggregator;
-   }
-
-   public boolean isWithIdle() {
-      return withIdle;
-   }
-
-   public void setWithIdle(boolean withIdle) {
-      this.withIdle = withIdle;
-   }
+//   public boolean isWithCompressor() {
+//      return withCompressor;
+//   }
+//
+//   public void setWithCompressor(boolean withCompressor) {
+//      this.withCompressor = withCompressor;
+//   }
+//
+//   public boolean isWithAggregator() {
+//      return withAggregator;
+//   }
+//
+//   public void setWithAggregator(boolean withAggregator) {
+//      this.withAggregator = withAggregator;
+//   }
+//
+//   public boolean isWithIdle() {
+//      return withIdle;
+//   }
+//
+//   public void setWithIdle(boolean withIdle) {
+//      this.withIdle = withIdle;
+//   }
 
    public int getPort() {
       return port;
@@ -138,9 +171,9 @@ public final class ServerConfig {
               ", certFile=" + certFile +
               ", keyFile=" + keyFile +
               ", cors=" + cors +
-              ", withCompressor=" + withCompressor +
-              ", withAggregator=" + withAggregator +
-              ", withIdle=" + withIdle +
+//              ", withCompressor=" + withCompressor +
+//              ", withAggregator=" + withAggregator +
+//              ", withIdle=" + withIdle +
               '}';
    }
 }

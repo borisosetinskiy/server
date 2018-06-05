@@ -17,6 +17,6 @@ public class MessageServerResponder implements Responder {
 
    @Override
    public RequestSession respond(ChannelRequest channelRequest)throws Exception {
-      return  requestService.process(channelRequest);
+      return  requestService.createSession(channelRequest);
    }
 }

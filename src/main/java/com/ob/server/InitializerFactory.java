@@ -1,6 +1,7 @@
 package com.ob.server;
 
-import io.netty.channel.ChannelInitializer;
+
+import com.ob.server.http.handler.ChannelInitializer;
 import io.netty.channel.group.ChannelGroup;
 
 /**

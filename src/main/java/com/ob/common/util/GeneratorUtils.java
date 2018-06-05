@@ -1,9 +1,9 @@
 package com.ob.common.util;
 
-import com.google.common.collect.Maps;
 import org.springframework.util.Assert;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by boris on 11/21/2016.
  */
 public class GeneratorUtils {
-    final public static Map<Character, GeneratorUtils> generators = Maps.newConcurrentMap();
+    final public static Map<Character, GeneratorUtils> generators = new ConcurrentHashMap<>();
     final AtomicLong counter = new AtomicLong();
     final Lock lock = new ReentrantLock();
     final char key;

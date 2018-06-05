@@ -2,11 +2,9 @@ package com.ob.server.http.handler;
 
 import com.ob.server.ServerLogger;
 import com.ob.server.http.HttpUtils;
-import com.ob.server.resolvers.ChannelHandlerResolver;
-import com.ob.server.resolvers.Responder;
+import com.ob.server.resolvers.ChannelHandlerResolvers;
 import com.ob.server.resolvers.ResponderResolver;
 import com.ob.server.session.ChannelRequestImpl;
-import com.ob.server.session.RequestSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpObject;
@@ -14,18 +12,18 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
-import static com.ob.server.http.AttributeKeys.REQUEST_SESSION_ATTR_KEY;
+import static com.ob.server.http.AttributeKeys.CHANNEL_REQUEST_ATTR_KEY;
 import static com.ob.server.http.PrintUtil.fromStack;
 
-public class ResolverHandler extends MessageToMessageDecoder<Object> {
+public class ChannelRequestHandler extends MessageToMessageDecoder<Object> {
     private final ResponderResolver responderResolver;
     private final ChannelRequestImpl channelRequest;
-    private final ChannelHandlerResolver channelHandlerResolver;
+    private final ChannelHandlerResolvers channelHandlerResolvers;
 
-    public ResolverHandler(ChannelHandlerContext ctx, ResponderResolver responderResolver, ChannelHandlerResolver channelHandlerResolver) {
-        this.channelRequest = new ChannelRequestImpl(ctx);
+    public ChannelRequestHandler(ResponderResolver responderResolver, ChannelHandlerResolvers channelHandlerResolvers) {
+        this.channelRequest = new ChannelRequestImpl();
         this.responderResolver = responderResolver;
-        this.channelHandlerResolver = channelHandlerResolver;
+        this.channelHandlerResolvers = channelHandlerResolvers;
     }
 
     @Override
@@ -34,19 +32,14 @@ public class ResolverHandler extends MessageToMessageDecoder<Object> {
             channelRequest.handle(o);
             if (channelRequest.isFinished()){
                 String path = channelRequest.getContext().get(HttpUtils.PATH);
-                final ChannelHandlerFactory channelHandlerFactory = channelHandlerResolver.resolve(path);
+                final ChannelHandlerFactory channelHandlerFactory = channelHandlerResolvers.resolve(path);
                 if(channelHandlerFactory != null) {
                     ctx.pipeline().addLast(channelHandlerFactory.create());
                 }
-                RequestSession requestSession = null;
-                if (!channelRequest.getContext().isEmpty()) {
-                    final Responder responder = responderResolver.resolve(path);
-                    if (responder != null) {
-                        requestSession = responder.respond(channelRequest);
-                    }
-                }
-                if (requestSession != null)
-                    ctx.channel().attr(REQUEST_SESSION_ATTR_KEY).set(requestSession);
+                channelRequest.setChannelHandlerContext(ctx);
+                ctx.channel().attr(CHANNEL_REQUEST_ATTR_KEY).set(channelRequest);
+                ctx.pipeline().addLast(new RequestSessionHandler(responderResolver));
+
             }
         }
         list.add(ReferenceCountUtil.retain(o));

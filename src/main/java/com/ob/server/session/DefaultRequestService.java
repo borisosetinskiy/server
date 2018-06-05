@@ -41,7 +41,7 @@ public class DefaultRequestService extends WithEventService implements RequestSe
     protected void onSessionClose(String key){ }
 
     @Override
-    public RequestSession process(final ChannelRequest channelRequest )throws Exception {
+    public RequestSession createSession(final ChannelRequest channelRequest )throws Exception {
         final RequestSession requestSession = requestSessionFactory.newRequestSession(channelRequest);
         statisticService.onChannelRequest(channelRequest);
         onSessionOpen(channelRequest.getChannelContext().channel().id().asShortText(), requestSession);

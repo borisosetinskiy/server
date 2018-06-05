@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.util.ReferenceCountUtil;
 
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
@@ -33,9 +34,7 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
         this.allowMaskMismatch = allowMaskMismatch;
     }
 
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-    }
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -46,7 +45,7 @@ public class WebSocketServerProtocolHandshakeHandler extends ChannelInboundHandl
             ctx.fireChannelRead(msg);
             return;
         }
-        channelRead0(ctx, msg);
+        ctx.fireChannelRead(ReferenceCountUtil.retain(msg));
         try {
             if (req.method() != GET ) {
                 ctx.channel().writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN)).addListener(ChannelFutureListener.CLOSE);

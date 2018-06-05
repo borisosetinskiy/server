@@ -1,6 +1,5 @@
 package com.ob.server.session;
 
-import com.google.common.collect.Maps;
 import com.ob.common.thread.TFactory;
 import com.ob.server.resolvers.ChannelRequest;
 import org.slf4j.Logger;
@@ -9,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class StatisticServiceImpl implements StatisticService {
     private  final static Logger logger = LoggerFactory.getLogger("LifeSessions");
     private final long scheduledTime;
-    private final Map<String, ChannelRequest> channels = Maps.newConcurrentMap();
+    private final Map<String, ChannelRequest> channels = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(new TFactory());
 
     public StatisticServiceImpl(long scheduledTime) {

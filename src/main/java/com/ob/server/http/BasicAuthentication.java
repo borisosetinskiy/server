@@ -55,4 +55,12 @@ public class BasicAuthentication extends AuthenticationHandler{
 //        list.add(o);
         list.add(ReferenceCountUtil.retain(o));
     }
+
+//    public static void main(String [] args){
+//        String lp = "blockmaze:8GLGgivtaMV5ne";
+//        BASE64Encoder base64Encoder = new BASE64Encoder();
+//        String r =  base64Encoder.encode(lp.getBytes()); YmxvY2ttYXplOjhHTEdnaXZ0YU1WNW5l
+//{"auth":"YmxvY2ttYXplOjhHTEdnaXZ0YU1WNW5l"}
+//        System.out.println(r);
+//    }
 }

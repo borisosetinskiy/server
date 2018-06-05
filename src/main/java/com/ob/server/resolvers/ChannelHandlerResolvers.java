@@ -2,6 +2,6 @@ package com.ob.server.resolvers;
 
 import com.ob.server.http.handler.ChannelHandlerFactory;
 
-public interface ChannelHandlerResolver {
+public interface ChannelHandlerResolvers {
     ChannelHandlerFactory resolve(String path);
 }

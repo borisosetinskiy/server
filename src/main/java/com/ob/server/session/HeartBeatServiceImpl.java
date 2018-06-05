@@ -1,11 +1,11 @@
 package com.ob.server.session;
 
-import com.google.common.collect.Maps;
 import com.ob.common.thread.TFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +15,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class HeartBeatServiceImpl implements HeartBeatService {
     private ScheduledExecutorService scheduler;
-    private Map<String, HeartBeat> sessions = Maps.newConcurrentMap();
+    private Map<String, HeartBeat> sessions = new ConcurrentHashMap<>();
+
 
 
     @PostConstruct

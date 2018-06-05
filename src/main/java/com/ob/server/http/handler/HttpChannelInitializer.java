@@ -6,7 +6,6 @@ import com.ob.server.http.AuthenticationFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.ChannelGroup;
-import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.cors.CorsConfig;
@@ -15,19 +14,22 @@ import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Created by boris on 19.04.2016.
  */
-public abstract class AbstractHttpChannelInitializer extends ChannelInitializer {
+public class HttpChannelInitializer extends ChannelInitializer {
 
-	protected final ServerConfig config;
-    protected final ChannelGroup allChannels;
-    protected final AuthenticationFactory authenticationFactory;
-    protected AbstractHttpChannelInitializer(ServerConfig config,  ChannelGroup allChannels, AuthenticationFactory authenticationFactory) {
+	private final ServerConfig config;
+    private final ChannelGroup allChannels;
+    private final AuthenticationFactory authenticationFactory;
+    private final Consumer<ChannelHandlerContext> consumer;
+    public HttpChannelInitializer(ServerConfig config, ChannelGroup allChannels, AuthenticationFactory authenticationFactory, Consumer<ChannelHandlerContext> consumer) {
     	this.config = config;
        	this.allChannels = allChannels;
         this.authenticationFactory = authenticationFactory;
+        this.consumer = consumer;
     }
     @Override
     public void doInitChannel(ChannelHandlerContext ctx)  {
@@ -44,15 +46,11 @@ public abstract class AbstractHttpChannelInitializer extends ChannelInitializer 
         if(authenticationFactory!=null){
             pipeline.addLast("authentication", authenticationFactory.create());
         }
-        if(config.isWithCompressor())
-            pipeline.addLast("compressor", new HttpContentCompressor());
-        if(config.isWithAggregator())
-            pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-        if(config.isWithIdle())
-            pipeline.addLast("idle", new IdleStateHandler(0, config.getWriteTimeoutSeconds(), config.getAllTimeoutSeconds(), TimeUnit.SECONDS));
-        last(ctx);
+        pipeline.addLast(new HttpObjectAggregator(65536));
+        if(consumer!=null)
+            consumer.accept(ctx);
+        pipeline.addLast("idle", new IdleStateHandler(0, config.getWriteTimeoutSeconds(), config.getAllTimeoutSeconds(), TimeUnit.SECONDS));
         allChannels.add(ctx.channel());
     }
 
-    protected abstract void last(ChannelHandlerContext ctx);
 }

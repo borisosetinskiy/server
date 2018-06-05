@@ -14,12 +14,15 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ChannelRequestImpl implements ChannelRequest {
-   private final ChannelHandlerContext ctx;
+
+   private ChannelHandlerContext channelHandlerContext;
    private Object2ObjectArrayMap<String, String> context = new Object2ObjectArrayMap();
    private long timestamp = System.currentTimeMillis();
 
-   public ChannelRequestImpl(ChannelHandlerContext ctx) {
-      this.ctx = ctx;
+
+
+   public void setChannelHandlerContext(ChannelHandlerContext channelHandlerContext) {
+      this.channelHandlerContext = channelHandlerContext;
    }
 
    private AtomicBoolean finished = new AtomicBoolean();
@@ -38,9 +41,7 @@ public class ChannelRequestImpl implements ChannelRequest {
          }
       }
    }
-   public ChannelHandlerContext getChannelContext() {
-      return ctx;
-   }
+
    @Override
    public Object2ObjectArrayMap<String, String> getContext() {
       return context;
@@ -52,9 +53,22 @@ public class ChannelRequestImpl implements ChannelRequest {
    }
 
    @Override
+   public ChannelHandlerContext getChannelContext() {
+      return channelHandlerContext;
+   }
+
+
+   public ChannelRequestImpl copy(ChannelHandlerContext channelHandlerContext){
+      ChannelRequestImpl channelRequest = new ChannelRequestImpl();
+      channelRequest.setChannelHandlerContext(channelHandlerContext);
+      channelRequest.context = context;
+      return channelRequest;
+   }
+
+   @Override
    public String toString() {
       final StringBuilder builder = new StringBuilder();
-      builder.append("{channel=").append(ctx.channel()).append(", context=");
+      builder.append("{channel=").append(channelHandlerContext.channel()).append(", context=");
       builder.append(Arrays.toString(context.keySet().toArray())).append(':')
               .append(Arrays.toString(context.values().toArray())).append('}');
       return  builder.toString();

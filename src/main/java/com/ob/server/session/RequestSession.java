@@ -7,15 +7,12 @@ import com.ob.server.resolvers.ChannelRequest;
 /**
  * Created by boris on 11.04.2016.
  */
-public interface RequestSession {
-    void onWrite(final Object message);
-    String getSessionId();
-    void onOpen();
-    void onClose();
-    void onRead(final Object message);
+public interface RequestSession extends Session{
     ChannelRequest getChannelRequest();
-    SessionParams sessionParams();
+    void onRead(final Object message);
+    void onWrite(final Object message);
     RequestSession EMPTY = new RequestSession(){
+
         @Override
         public void onWrite(Object message) {
 
@@ -45,9 +42,5 @@ public interface RequestSession {
             return null;
         }
 
-        @Override
-        public SessionParams sessionParams() {
-            return SessionParams.EMPTY;
-        }
     };
 }
