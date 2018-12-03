@@ -1,46 +1,26 @@
+/*
+ * Decompiled with CFR 0_132.
+ */
 package com.ob.server.session;
 
+import com.ob.server.ChannelRequestDto;
 
-import com.ob.server.resolvers.ChannelRequest;
+public interface RequestSession {
+    default void onWrite(Object var1) {
+    }
 
+    String getSessionId();
 
-/**
- * Created by boris on 11.04.2016.
- */
-public interface RequestSession extends Session{
-    ChannelRequest getChannelRequest();
-    void onRead(final Object message);
-    void onWrite(final Object message);
-    RequestSession EMPTY = new RequestSession(){
+    default void onOpen() {
+    }
 
-        @Override
-        public void onWrite(Object message) {
+    default void onClose() {
+    }
 
-        }
-        @Override
-        public String getSessionId() {
-            return null;
-        }
+    default void onRead(Object var1) {
+    }
 
-        @Override
-        public void onOpen() {
+    ChannelRequestDto getChannelRequest();
 
-        }
-
-        @Override
-        public void onClose() {
-
-        }
-
-        @Override
-        public void onRead(Object message) {
-
-        }
-
-        @Override
-        public ChannelRequest getChannelRequest() {
-            return null;
-        }
-
-    };
 }
+

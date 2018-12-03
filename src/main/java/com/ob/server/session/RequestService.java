@@ -1,10 +1,11 @@
+/*
+ * Decompiled with CFR 0_132.
+ */
 package com.ob.server.session;
 
-import com.ob.server.resolvers.ChannelRequest;
+import com.ob.server.ChannelRequestDto;
 
-/**
- * Created by boris on 11.04.2016.
- */
 public interface RequestService {
-    RequestSession createSession(final ChannelRequest channelRequest)throws Exception;
+    RequestSession process(ChannelRequestDto var1) throws Exception;
 }
+

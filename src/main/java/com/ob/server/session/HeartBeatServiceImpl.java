@@ -1,53 +1,66 @@
+/*
+ * Decompiled with CFR 0_132.
+ */
 package com.ob.server.session;
-
-import com.ob.common.thread.TFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Created by boris on 19.05.2016.
- */
-public class HeartBeatServiceImpl implements HeartBeatService {
-    private ScheduledExecutorService scheduler;
-    private Map<String, HeartBeat> sessions = new ConcurrentHashMap<>();
-
-
-
-    @PostConstruct
-    public void startUp(){
-        scheduler = Executors.newSingleThreadScheduledExecutor(new TFactory());
-        scheduler.scheduleWithFixedDelay(()->{
-            sessions.values().forEach(s -> {
-                try{
-                    s.heartBeat();
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                }
-            });
-        }, 0, 1, TimeUnit.SECONDS);
+public class HeartBeatServiceImpl
+        implements HeartBeatService {
+    private final ScheduledExecutorService scheduler;
+    private Map<String, HeartBeat> sessions = new ConcurrentHashMap<>(64, 0.75f, 64);
+    private final HeartBeatFactory heartBeatFactory;
+    public HeartBeatServiceImpl(ScheduledExecutorService scheduler, HeartBeatFactory heartBeatFactory) {
+        this.scheduler = scheduler;
+        this.heartBeatFactory = heartBeatFactory;
     }
 
-    @PreDestroy
-    public void shutDown(){
-        if(!scheduler.isShutdown()){
-            scheduler.shutdown();
+    public void start() {
+        this.scheduler.scheduleWithFixedDelay(() ->
+                sessions.values().forEach(s -> {
+                    try {
+                        s.heartBeat();
+                    } catch (Exception var2) {
+                    }
+                }), 5L, 5L, TimeUnit.SECONDS);
+    }
+
+
+    public void stop() {
+        if (!this.scheduler.isShutdown()) {
+            this.scheduler.shutdown();
         }
     }
 
     @Override
     public void addSession(String key, RequestSession requestSession) {
-        if(requestSession instanceof HeartBeat)
-            sessions.put(key, (HeartBeat)requestSession);
+        this.sessions.put(key,  new HeartBeat(requestSession));
     }
 
     @Override
     public void removeSession(String key) {
-        sessions.remove(key);
+        this.sessions.remove(key);
+    }
+
+    class HeartBeat{
+        private AtomicLong lastOperation = new AtomicLong();
+        private RequestSession requestSession;
+
+        public HeartBeat(RequestSession requestSession) {
+            this.requestSession = requestSession;
+        }
+        public void heartBeat() {
+            if (System.currentTimeMillis() - lastOperation.get() >= 30) {
+                requestSession.onWrite(heartBeatFactory.create());
+                lastOperation.getAndSet(System.currentTimeMillis());
+            }
+        }
     }
 }
+
