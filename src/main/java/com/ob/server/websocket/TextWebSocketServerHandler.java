@@ -14,6 +14,7 @@
  */
 package com.ob.server.websocket;
 
+import com.ob.server.HttpUtils;
 import com.ob.server.ServerLogger;
 import com.ob.server.AttributeKeys;
 import com.ob.server.PrintUtil;
@@ -27,29 +28,38 @@ import java.util.List;
 
 public class TextWebSocketServerHandler
 extends MessageToMessageDecoder<TextWebSocketFrame> {
+    final static TextWebSocketFrame PONG = new TextWebSocketFrame("1");
     protected void decode(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame textWebSocketFrame, List<Object> list) throws Exception {
         try {
             String msg = textWebSocketFrame.content().toString(Charset.defaultCharset());
-            if (msg != null && !msg.isEmpty()) {
-                ServerLogger.loggerMessage.debug("Channel {}, message {}"
-                        , channelHandlerContext.channel().id().asShortText(), msg);
-                io.netty.util.Attribute<RequestSession> attribute = channelHandlerContext.channel().attr(AttributeKeys.REQUEST_SESSION_ATTR_KEY);
-                if(attribute == null) {
-                    WebSocketUtil.onError(channelHandlerContext, new Exception("No session"));
-                    return;
-                }
-                RequestSession requestSession = attribute.get();
-                if(requestSession == null){
-                    WebSocketUtil.onError(channelHandlerContext, new Exception("No session"));
-                    return;
-                }
-                requestSession.onRead(msg);
+            if("0".equals(msg)){
+                channelHandlerContext
+                        .writeAndFlush(HttpUtils.safeDuplicate(PONG)
+                                , channelHandlerContext.voidPromise());
+                return;
             }
+            if (msg != null && !msg.isEmpty()) {
+                    ServerLogger.loggerMessage.debug("Channel {}, message {}"
+                            , channelHandlerContext.channel().id().asShortText(), msg);
+                    io.netty.util.Attribute<RequestSession> attribute = channelHandlerContext.channel().attr(AttributeKeys.REQUEST_SESSION_ATTR_KEY);
+                    if(attribute == null) {
+                        WebSocketUtil.onError(channelHandlerContext, new Exception("No session"));
+                        return;
+                    }
+                    RequestSession requestSession = attribute.get();
+                    if(requestSession == null){
+                        WebSocketUtil.onError(channelHandlerContext, new Exception("No session"));
+                        return;
+                    }
+                    requestSession.onRead(msg);
+
+            }
+
         }
         catch (Exception var6) {
-            ServerLogger.loggerTrash.error("Channel {}, error {}"
+            ServerLogger.loggerTrash.error("Channel {}"
                     , channelHandlerContext.channel().id().asShortText()
-                    , PrintUtil.fromStack(var6));
+                    , var6);
         }
     }
 

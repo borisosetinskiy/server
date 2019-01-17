@@ -19,10 +19,13 @@ import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
 import com.ob.server.session.RequestSessionFactory;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class RequestServiceImpl
 implements RequestService {
     private final RequestSessionFactory requestSessionFactory;
     private final HeartBeatService heartBeatService;
+    private AtomicLong sessionSize = new AtomicLong();
 
     public RequestServiceImpl(RequestSessionFactory requestSessionFactory, HeartBeatService heartBeatService) {
         this.requestSessionFactory = requestSessionFactory;
@@ -36,14 +39,13 @@ implements RequestService {
         if(heartBeatService!=null)
             heartBeatService.addSession(sessionId, requestSession);
         requestSession.onOpen();
-        ServerLogger.logger.debug(String.format("Session %s. Opened", sessionId));
+        ServerLogger.logger.debug(String.format("Session %s. Opened. Sessions %s", sessionId, sessionSize.incrementAndGet()));
         channelRequestDto.getChannelContext().channel().closeFuture().addListener(future -> {
             if(heartBeatService!=null)
                 heartBeatService.removeSession(sessionId);
             requestSession.onClose();
-            ServerLogger.logger.debug(String.format("Session %s, lifecycle %s ms. Closed", sessionId, System.currentTimeMillis() - channelRequestDto.getTimestamp()));
+            ServerLogger.logger.debug(String.format("Session %s, lifecycle %s ms. Closed. Sessions %s", sessionId, System.currentTimeMillis() - channelRequestDto.getTimestamp(), sessionSize.decrementAndGet()));
         });
         return requestSession;
     }
 }
-

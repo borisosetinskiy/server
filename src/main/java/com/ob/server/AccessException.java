@@ -4,7 +4,7 @@
 package com.ob.server;
 
 public class AccessException
-extends Exception {
+extends RuntimeException {
     public AccessException() {
         super("403, Forbidden");
     }
