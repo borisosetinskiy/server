@@ -6,7 +6,7 @@
 
     <groupId>com.ob</groupId>
     <artifactId>server-netty</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.version>1.8</maven.compiler.version>
@@ -16,7 +16,7 @@
         <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil</artifactId>
-            <version>7.0.13</version>
+            <version>8.2.2</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0-jre</version>
+            <version>27.0.1-jre</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.netty/netty-example -->
         <!--<dependency>-->

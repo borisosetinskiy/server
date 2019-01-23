@@ -8,16 +8,21 @@
  */
 package com.ob.server;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
-public abstract class AuthenticationHandler
+import java.util.List;
+
+public class AuthenticationHandler
 extends MessageToMessageDecoder<Object> {
-    protected Access access;
+    private Access access;
 
     public AuthenticationHandler(Access access) {
         this.access = access;
     }
-
-
+    @Override
+    protected void decode(ChannelHandlerContext channelHandlerContext, Object o, List<Object> list) throws Exception {
+        access.check(channelHandlerContext, o, list);
+    }
 }
 

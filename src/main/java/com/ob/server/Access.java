@@ -3,9 +3,11 @@
  */
 package com.ob.server;
 
-public interface Access {
-    Access EMPTY = msg -> true;
+import io.netty.channel.ChannelHandlerContext;
 
-    boolean check(Object var1);
+import java.util.List;
+
+public interface Access {
+    void check(ChannelHandlerContext channelHandlerContext, Object o, List<Object> list);
 }
 
