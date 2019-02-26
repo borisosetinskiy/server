@@ -121,8 +121,9 @@ public class NettyServer {
                         }
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
                         pipeline.addLast("ws-compression", new WebSocketServerCompressionHandler());
-                        pipeline.addLast("custom",
-                                new RequestSessionWebSocketServerHandler(requestService, allChannels));
+                        pipeline.addLast("custom", config.getChannelHandlerFactory() != null
+                                ? config.getChannelHandlerFactory().create(pipeline, requestService)
+                                : new RequestSessionWebSocketServerHandler(requestService, allChannels));
                         pipeline.addLast(new ChannelHandler[]{new TextWebSocketServerHandler()});
                         pipeline.addLast("idle", new IdleStateHandler(0L
                                 , 300l
@@ -132,11 +133,11 @@ public class NettyServer {
                 })
                 .option(ChannelOption.SO_REUSEADDR, true))
                 .option(ChannelOption.SO_BACKLOG, 1024))
-                .childOption(ChannelOption.SO_RCVBUF, 32 * 1024)
-                .childOption(ChannelOption.SO_SNDBUF, 64 * 1024)
+                .childOption(ChannelOption.SO_RCVBUF, config.getReceiveBuffer())
+                .childOption(ChannelOption.SO_SNDBUF, config.getSendBuffer())
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK
-                        , new WriteBufferWaterMark(8 * 1024, 32 * 1024))
+                        , new WriteBufferWaterMark(config.getWriteBufferWaterMarkLow(), config.getWriteBufferWaterMarkHigh()))
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
         this.future = bootstrap.bind(port);
         this.allChannels.add(this.future.channel());

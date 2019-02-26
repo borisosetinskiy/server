@@ -9,6 +9,7 @@
  */
 package com.ob.server;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.NettyRuntime;
@@ -19,13 +20,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 final class ServerConfig {
     private SslContext sslCtx;
     private File certFile;
     private File keyFile;
+    private int receiveBuffer = 32 * 1024;
+    private int sendBuffer = 64 * 1024;
+    private int writeBufferWaterMarkLow = 8 * 1024;
+    private int writeBufferWaterMarkHigh = 32 * 1024;
     private int bossNumber = 1;
     private int workNumber = NettyRuntime.availableProcessors() * 3;
+    private ChannelHandlerFactory ChannelHandlerFactory;
     public SslContext getSslCtx() {
         return this.sslCtx;
     }
@@ -51,6 +56,45 @@ final class ServerConfig {
         }
     }
 
+    public com.ob.server.ChannelHandlerFactory getChannelHandlerFactory() {
+        return ChannelHandlerFactory;
+    }
+
+    public void setChannelHandlerFactory(com.ob.server.ChannelHandlerFactory channelHandlerFactory) {
+        ChannelHandlerFactory = channelHandlerFactory;
+    }
+
+    public int getReceiveBuffer() {
+        return receiveBuffer;
+    }
+
+    public void setReceiveBuffer(int receiveBuffer) {
+        this.receiveBuffer = receiveBuffer;
+    }
+
+    public int getSendBuffer() {
+        return sendBuffer;
+    }
+
+    public void setSendBuffer(int sendBuffer) {
+        this.sendBuffer = sendBuffer;
+    }
+
+    public int getWriteBufferWaterMarkLow() {
+        return writeBufferWaterMarkLow;
+    }
+
+    public void setWriteBufferWaterMarkLow(int writeBufferWaterMarkLow) {
+        this.writeBufferWaterMarkLow = writeBufferWaterMarkLow;
+    }
+
+    public int getWriteBufferWaterMarkHigh() {
+        return writeBufferWaterMarkHigh;
+    }
+
+    public void setWriteBufferWaterMarkHigh(int writeBufferWaterMarkHigh) {
+        this.writeBufferWaterMarkHigh = writeBufferWaterMarkHigh;
+    }
 
     public int getBossNumber() {
         return bossNumber;
