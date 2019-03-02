@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.bootstrap.AbstractBootstrap
  *  io.netty.bootstrap.ServerBootstrap
@@ -31,6 +31,8 @@ import com.ob.server.websocket.RequestSessionWebSocketServerHandler;
 import com.ob.server.websocket.TextWebSocketServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -64,7 +66,12 @@ public class NettyServer {
     private HeartBeatFactory heartBeatFactory;
     private final RequestSessionFactory requestSessionFactory;
     private HeartBeatService heartBeatService;
+    private boolean epoll;
 
+    public NettyServer setEpoll(boolean epoll) {
+        this.epoll = epoll;
+        return this;
+    }
 
     public NettyServer(int port, RequestSessionFactory requestSessionFactory) {
         this.port = port;
@@ -91,21 +98,24 @@ public class NettyServer {
         return this;
     }
 
-    public NettyServer start()  {
-        bossGroup = new NioEventLoopGroup(config.getBossNumber());
-        workerGroup = new NioEventLoopGroup(config.getWorkNumber());
+    public NettyServer start() {
+        bossGroup = epoll? new EpollEventLoopGroup(config.getBossNumber()) : new NioEventLoopGroup(config.getBossNumber());
+        workerGroup = epoll? new EpollEventLoopGroup(config.getWorkNumber()) : new NioEventLoopGroup(config.getWorkNumber());
         ServerBootstrap bootstrap = new ServerBootstrap();
         if (this.serverShutdown != null) {
             this.serverShutdown.setChannelGroup(this.allChannels);
         }
-        if(heartBeatFactory!=null){
-            heartBeatService = new HeartBeatServiceImpl(Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Ping-Pong-%d").build()), heartBeatFactory);
+        if (heartBeatFactory != null) {
+            heartBeatService = new HeartBeatServiceImpl(
+                    Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
+                            .setDaemon(true).setNameFormat("Ping-Pong-%d").build()), heartBeatFactory);
             heartBeatService.start();
         }
         requestService = new RequestServiceImpl(requestSessionFactory, heartBeatService);
         ((((bootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)).handler(new LoggingHandler(LogLevel.DEBUG)))
-                .childHandler(new ChannelInitializer<SocketChannel>(){
+                .channel(epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class))
+                .handler(new LoggingHandler(LogLevel.DEBUG)))
+                .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline pipeline = socketChannel.pipeline();
@@ -113,7 +123,7 @@ public class NettyServer {
                             pipeline.addLast("ssl", config.getSslCtx().newHandler(socketChannel.alloc()));
                         }
                         pipeline.addLast("http", new HttpServerCodec());
-                        if(withAgentHandler) {
+                        if (withAgentHandler) {
                             pipeline.addLast("agent", agentHandler);
                         }
                         if (authenticationHandler != null) {
@@ -151,46 +161,47 @@ public class NettyServer {
         try {
             ChannelGroupFuture future = this.allChannels.close();
             future.awaitUninterruptibly();
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             // empty catch block
         }
         try {
             if (!bossGroup.isShutdown()) {
                 bossGroup.shutdownGracefully();
             }
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             // empty catch block
         }
         try {
             if (!workerGroup.isShutdown()) {
                 workerGroup.shutdownGracefully();
             }
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             // empty catch block
         }
         if (heartBeatService != null) {
-            try{
+            try {
                 heartBeatService.stop();
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
 
         }
     }
 
 
-    public static NettyServer create(int port, RequestSessionFactory requestSessionFactory){
+    public static NettyServer create(int port, RequestSessionFactory requestSessionFactory) {
         return new NettyServer(port, requestSessionFactory);
     }
+
     public NettyServer setCertificate(String key, String cert) {
         config.setCertificate(key, cert);
         return this;
     }
+
     public NettyServer setBossNumber(int bossNumber) {
         config.setBossNumber(bossNumber);
         return this;
     }
+
     public NettyServer setWorkNumber(Integer workNumber) {
         config.setWorkNumber(workNumber);
         return this;
