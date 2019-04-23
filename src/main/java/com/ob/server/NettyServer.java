@@ -130,11 +130,9 @@ public class NettyServer {
                             pipeline.addLast("authentication", authenticationHandler);
                         }
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-                        pipeline.addLast("ws-compression", new WebSocketServerCompressionHandler());
-                        pipeline.addLast("custom", config.getChannelHandlerFactory() != null
-                                ? config.getChannelHandlerFactory().create(pipeline, requestService)
-                                : new RequestSessionWebSocketServerHandler(requestService, allChannels));
-                        pipeline.addLast(new ChannelHandler[]{new TextWebSocketServerHandler()});
+                        if(config.getChannelHandlerFactory() != null){
+                            pipeline.addLast( config.getChannelHandlerFactory().create(pipeline, requestService, allChannels));
+                        }
                         pipeline.addLast("idle", new IdleStateHandler(0L
                                 , 300l
                                 , 300l
@@ -206,5 +204,19 @@ public class NettyServer {
         config.setWorkNumber(workNumber);
         return this;
     }
+    public NettyServer setChannelHandlerFactory(com.ob.server.ChannelHandlerFactory channelHandlerFactory) {
+        config.setChannelHandlerFactory(channelHandlerFactory);
+        return this;
+    }
+    public NettyServer setWebsocket() {
+        config.setChannelHandlerFactory(new WebSocketChannelHandlerFactory());
+        return this;
+    }
+    public NettyServer setHttp() {
+        config.setChannelHandlerFactory(new HttpChannelHandlerFactory());
+        return this;
+    }
+
+
 }
 

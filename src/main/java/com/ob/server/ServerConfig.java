@@ -9,7 +9,6 @@
  */
 package com.ob.server;
 
-import io.netty.channel.ChannelHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.NettyRuntime;
@@ -30,7 +29,7 @@ final class ServerConfig {
     private int writeBufferWaterMarkHigh = 32 * 1024;
     private int bossNumber = 1;
     private int workNumber = NettyRuntime.availableProcessors() * 3;
-    private ChannelHandlerFactory ChannelHandlerFactory;
+    private ChannelHandlerFactory channelHandlerFactory;
     public SslContext getSslCtx() {
         return this.sslCtx;
     }
@@ -57,60 +56,67 @@ final class ServerConfig {
     }
 
     public com.ob.server.ChannelHandlerFactory getChannelHandlerFactory() {
-        return ChannelHandlerFactory;
+        return channelHandlerFactory;
     }
 
-    public void setChannelHandlerFactory(com.ob.server.ChannelHandlerFactory channelHandlerFactory) {
-        ChannelHandlerFactory = channelHandlerFactory;
+    public ServerConfig setChannelHandlerFactory(com.ob.server.ChannelHandlerFactory channelHandlerFactory) {
+        this.channelHandlerFactory = channelHandlerFactory;
+        return this;
     }
 
     public int getReceiveBuffer() {
         return receiveBuffer;
     }
 
-    public void setReceiveBuffer(int receiveBuffer) {
+    public ServerConfig setReceiveBuffer(int receiveBuffer) {
         this.receiveBuffer = receiveBuffer;
+        return this;
     }
 
     public int getSendBuffer() {
         return sendBuffer;
     }
 
-    public void setSendBuffer(int sendBuffer) {
+    public ServerConfig setSendBuffer(int sendBuffer) {
         this.sendBuffer = sendBuffer;
+        return this;
     }
 
     public int getWriteBufferWaterMarkLow() {
         return writeBufferWaterMarkLow;
     }
 
-    public void setWriteBufferWaterMarkLow(int writeBufferWaterMarkLow) {
+    public ServerConfig setWriteBufferWaterMarkLow(int writeBufferWaterMarkLow) {
         this.writeBufferWaterMarkLow = writeBufferWaterMarkLow;
+        return this;
     }
 
     public int getWriteBufferWaterMarkHigh() {
         return writeBufferWaterMarkHigh;
     }
 
-    public void setWriteBufferWaterMarkHigh(int writeBufferWaterMarkHigh) {
+    public ServerConfig setWriteBufferWaterMarkHigh(int writeBufferWaterMarkHigh) {
         this.writeBufferWaterMarkHigh = writeBufferWaterMarkHigh;
+        return this;
     }
 
     public int getBossNumber() {
         return bossNumber;
     }
 
-    public void setBossNumber(int bossNumber) {
+    public ServerConfig setBossNumber(int bossNumber) {
         this.bossNumber = bossNumber;
+        return this;
     }
 
     public int getWorkNumber() {
         return workNumber;
     }
 
-    public void setWorkNumber(Integer workNumber) {
+    public ServerConfig setWorkNumber(Integer workNumber) {
         if(workNumber != null)
             this.workNumber = workNumber;
+        return this;
     }
 
 }
