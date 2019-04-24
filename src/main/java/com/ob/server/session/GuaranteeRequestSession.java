@@ -67,4 +67,9 @@ public abstract class GuaranteeRequestSession <OUT> implements RequestSession {
     public String getSessionId() {
         return sessionId;
     }
+
+    @Override
+    public ChannelRequestDto getChannelRequest() {
+        return channelRequestDto;
+    }
 }
