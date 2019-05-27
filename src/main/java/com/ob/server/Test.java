@@ -1,14 +1,15 @@
 package com.ob.server;
 
-import com.ob.server.session.HeartBeatFactory;
 import com.ob.server.session.RequestSession;
-import com.ob.server.session.RequestSessionFactory;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.CharsetUtil;
 
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Test {
     public static void main(String[] args) throws Exception {
@@ -26,10 +27,16 @@ public class Test {
             }
             @Override
             public void onOpen() {
-                try{
-                    Thread.sleep(1000*5);
-                }catch (Exception e){}
-                var1.getChannelContext().channel().writeAndFlush(new TextWebSocketFrame(String.valueOf(System.currentTimeMillis())));
+//                try{
+//                    Thread.sleep(1000*5);
+//                }catch (Exception e){}
+                var1.getChannelContext()
+                        .writeAndFlush(
+                        new DefaultFullHttpResponse(HttpVersion.HTTP_1_1
+                                , HttpResponseStatus.OK
+                                , Unpooled.copiedBuffer(String.valueOf(System.currentTimeMillis())
+                                , CharsetUtil.UTF_8))).addListener(ChannelFutureListener.CLOSE);
+
 
 //                Executors.newSingleThreadExecutor().execute(() -> {
 //                    while(!Thread.currentThread().isInterrupted()){
@@ -40,7 +47,7 @@ public class Test {
 //                    }
 //                });
             }
-        }).setBossNumber(1).withAgentHandler().setHeartBeatFactory(() -> new PingWebSocketFrame()).start();
+        }).setHttp().setBossNumber(1).withAgentHandler().start();
         System.in.read();
         nettyServer.stop();
     }

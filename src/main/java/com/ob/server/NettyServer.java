@@ -25,10 +25,7 @@
  */
 package com.ob.server;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.ob.server.session.*;
-import com.ob.server.websocket.RequestSessionWebSocketServerHandler;
-import com.ob.server.websocket.TextWebSocketServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -41,14 +38,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class NettyServer {
 
@@ -99,16 +97,24 @@ public class NettyServer {
     }
 
     public NettyServer start() {
-        bossGroup = epoll? new EpollEventLoopGroup(config.getBossNumber()) : new NioEventLoopGroup(config.getBossNumber());
-        workerGroup = epoll? new EpollEventLoopGroup(config.getWorkNumber()) : new NioEventLoopGroup(config.getWorkNumber());
+        bossGroup = epoll ? new EpollEventLoopGroup(config.getBossNumber()) : new NioEventLoopGroup(config.getBossNumber());
+        workerGroup = epoll ? new EpollEventLoopGroup(config.getWorkNumber()) : new NioEventLoopGroup(config.getWorkNumber());
         ServerBootstrap bootstrap = new ServerBootstrap();
         if (this.serverShutdown != null) {
             this.serverShutdown.setChannelGroup(this.allChannels);
         }
         if (heartBeatFactory != null) {
             heartBeatService = new HeartBeatServiceImpl(
-                    Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
-                            .setDaemon(true).setNameFormat("Ping-Pong-%d").build()), heartBeatFactory);
+                    Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                        AtomicLong counter = new AtomicLong();
+
+                        @Override
+                        public Thread newThread(Runnable r) {
+                            var t = new Thread(r, "Ping-Pong-" + counter.incrementAndGet());
+                            t.setDaemon(true);
+                            return t;
+                        }
+                    }), heartBeatFactory);
             heartBeatService.start();
         }
         requestService = new RequestServiceImpl(requestSessionFactory, heartBeatService);
@@ -130,8 +136,8 @@ public class NettyServer {
                             pipeline.addLast("authentication", authenticationHandler);
                         }
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-                        if(config.getChannelHandlerFactory() != null){
-                            pipeline.addLast( config.getChannelHandlerFactory().create(pipeline, requestService, allChannels));
+                        if (config.getChannelHandlerFactory() != null) {
+                            pipeline.addLast(config.getChannelHandlerFactory().create(pipeline, requestService, allChannels));
                         }
                         pipeline.addLast("idle", new IdleStateHandler(0L
                                 , 300l
@@ -204,14 +210,17 @@ public class NettyServer {
         config.setWorkNumber(workNumber);
         return this;
     }
+
     public NettyServer setChannelHandlerFactory(com.ob.server.ChannelHandlerFactory channelHandlerFactory) {
         config.setChannelHandlerFactory(channelHandlerFactory);
         return this;
     }
+
     public NettyServer setWebsocket() {
         config.setChannelHandlerFactory(new WebSocketChannelHandlerFactory());
         return this;
     }
+
     public NettyServer setHttp() {
         config.setChannelHandlerFactory(new HttpChannelHandlerFactory());
         return this;
