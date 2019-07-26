@@ -6,7 +6,7 @@
 
     <groupId>com.ob</groupId>
     <artifactId>server-netty</artifactId>
-    <version>1.0.6.11</version>
+    <version>1.0.6.12</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
