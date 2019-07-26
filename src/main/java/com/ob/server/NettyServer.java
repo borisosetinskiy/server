@@ -217,6 +217,9 @@ public class NettyServer {
         return this;
     }
 
+    public ServerConfig getConfig() {
+        return config;
+    }
 
 }
 
