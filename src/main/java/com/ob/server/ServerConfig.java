@@ -19,7 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-final class ServerConfig {
+public final class ServerConfig {
     private SslContext sslCtx;
     private File certFile;
     private File keyFile;
