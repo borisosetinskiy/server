@@ -66,6 +66,10 @@ public class NettyServer {
     private HeartBeatService heartBeatService;
     private boolean epoll;
 
+    public ServerConfig getConfig() {
+        return config;
+    }
+
     public NettyServer setEpoll(boolean epoll) {
         this.epoll = epoll;
         return this;
