@@ -20,12 +20,15 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.LastHttpContent;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 public class RequestSessionHttpServerHandler
 extends SimpleChannelInboundHandler<Object> {
-    public final RequestService requestService;
-    public final ChannelGroup allChannels;
-    private HttpData httpData = HttpData.EMPTY;
+    private final RequestService requestService;
+    private final ChannelGroup allChannels;
+
+    private Object2ObjectArrayMap<String, String> params = new Object2ObjectArrayMap<>();
 
     public RequestSessionHttpServerHandler(RequestService requestService, ChannelGroup allChannels) {
         this.requestService = requestService;
@@ -34,11 +37,10 @@ extends SimpleChannelInboundHandler<Object> {
 
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         try {
-            if (msg instanceof HttpObject) {
-                this.httpData = HttpDataImpl.collectData(msg, this.httpData);
-            }
-            if (this.httpData != HttpData.EMPTY && this.httpData.finished()) {
-                RequestSession requestSession = requestService.process(new ChannelRequestDto(ctx, httpData.context()));
+            if (msg instanceof LastHttpContent) {
+                HttpUtils.params((HttpObject)msg, params);
+                RequestSession requestSession
+                        = requestService.process(new ChannelRequestDto(ctx, params));
                 if (requestSession == null) {
                     throw new AccessException();
                 }
@@ -58,13 +60,11 @@ extends SimpleChannelInboundHandler<Object> {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         ServerLogger.loggerProblem.error(String.format("Channel %s, error %s ", ctx.channel().id().asShortText(), PrintUtil.fromStack(cause)));
         ctx.fireExceptionCaught(cause);
-        this.httpData =  HttpData.EMPTY ;
     }
 
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         ServerLogger.loggerChannel.debug(String.format("Channel %s unregistered.", ctx.channel().id().asShortText()));
         ctx.fireChannelUnregistered();
-        this.httpData =  HttpData.EMPTY ;
     }
 }
 
