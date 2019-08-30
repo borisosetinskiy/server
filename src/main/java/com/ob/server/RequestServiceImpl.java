@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.channel.Channel
  *  io.netty.channel.ChannelFuture
@@ -22,7 +22,7 @@ import com.ob.server.session.RequestSessionFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RequestServiceImpl
-implements RequestService {
+        implements RequestService {
     private final RequestSessionFactory requestSessionFactory;
     private final HeartBeatService heartBeatService;
     private AtomicLong sessionSize = new AtomicLong();
@@ -36,15 +36,15 @@ implements RequestService {
     public RequestSession process(ChannelRequestDto channelRequestDto) throws Exception {
         RequestSession requestSession = this.requestSessionFactory.newRequestSession(channelRequestDto);
         String sessionId = channelRequestDto.getChannelContext().channel().id().asShortText();
-        if(heartBeatService!=null)
+        if (heartBeatService != null)
             heartBeatService.addSession(sessionId, requestSession);
         requestSession.onOpen();
         ServerLogger.logger.debug(String.format("Session %s. Opened. Sessions %s", sessionId, sessionSize.incrementAndGet()));
         channelRequestDto.getChannelContext().channel().closeFuture().addListener(future -> {
-            if(heartBeatService!=null)
+            ServerLogger.logger.debug(String.format("Session %s, lifecycle %s ms. Closed. Sessions %s", sessionId, System.currentTimeMillis() - channelRequestDto.getTimestamp(), sessionSize.decrementAndGet()));
+            if (heartBeatService != null)
                 heartBeatService.removeSession(sessionId);
             requestSession.onClose();
-            ServerLogger.logger.debug(String.format("Session %s, lifecycle %s ms. Closed. Sessions %s", sessionId, System.currentTimeMillis() - channelRequestDto.getTimestamp(), sessionSize.decrementAndGet()));
         });
         return requestSession;
     }

@@ -15,22 +15,24 @@
 package com.ob.server.websocket;
 
 import com.ob.server.*;
-
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
-import com.ob.server.websocket.WebSocketServerHandler;
-import com.ob.server.websocket.WebSocketUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.LastHttpContent;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class RequestSessionWebSocketServerHandler
 extends WebSocketServerHandler {
-    public final RequestService requestService;
-    public final ChannelGroup allChannels;
-    private HttpData httpData = HttpData.EMPTY;
+    private final RequestService requestService;
+    private final ChannelGroup allChannels;
+    private Object2ObjectArrayMap<String, String> params = new Object2ObjectArrayMap<>();
+    private Logger logger = LoggerFactory.getLogger(RequestSessionWebSocketServerHandler.class);
 
     public RequestSessionWebSocketServerHandler(RequestService requestService, ChannelGroup allChannels) {
         super();
@@ -40,12 +42,15 @@ extends WebSocketServerHandler {
 
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         try {
-            if (evt instanceof WebSocketServerHandler.HandshakeComplete
-                    && this.httpData != HttpData.EMPTY) {
-                RequestSession requestSession = requestService.process(new ChannelRequestDto(ctx, httpData.context()));
+            if (evt instanceof WebSocketServerHandler.HandshakeComplete) {
+                RequestSession requestSession = requestService.process(new ChannelRequestDto(ctx, params));
                 if (requestSession == null) {
                     throw new AccessException();
                 }
+                logger.debug("DECODE: Thread:{}, Channel:{}, Event:{}"
+                        , Thread.currentThread().getName()
+                        , ctx.channel().id().asShortText()
+                        , evt);
                 ctx.channel().attr(AttributeKeys.REQUEST_SESSION_ATTR_KEY).set(requestSession);
             }
             ctx.fireUserEventTriggered(evt);
@@ -64,15 +69,19 @@ extends WebSocketServerHandler {
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         ServerLogger.loggerChannel.debug(String.format("Channel %s unregistered.", ctx.channel().id().asShortText()));
         ctx.fireChannelUnregistered();
-        this.httpData = HttpData.EMPTY;
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Object o, List<Object> list) throws Exception {
         try {
-            if (o instanceof HttpObject) {
-                this.httpData = HttpDataImpl.collectData(o, this.httpData);
+
+            if (o instanceof LastHttpContent) {
+                HttpUtils.params((HttpObject)o, params);
             }
+            logger.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
+                    , Thread.currentThread().getName()
+                    , ctx.channel().id().asShortText()
+                    , o);
             super.decode(ctx, o, list);
         }catch (Exception var5) {
             WebSocketUtil.onError(ctx, var5);
