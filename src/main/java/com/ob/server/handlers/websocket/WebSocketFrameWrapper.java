@@ -1,4 +1,4 @@
-package com.ob.server.websocket;
+package com.ob.server.handlers.websocket;
 
 import com.ob.server.SocketFrameWrapper;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;

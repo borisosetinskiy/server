@@ -25,7 +25,7 @@
  *  io.netty.util.concurrent.Future
  *  io.netty.util.concurrent.GenericFutureListener
  */
-package com.ob.server.websocket;
+package com.ob.server.handlers.websocket;
 
 import com.ob.server.RequestUtil;
 import io.netty.channel.*;
@@ -55,7 +55,6 @@ extends ChannelInboundHandlerAdapter {
         if(msg instanceof  FullHttpRequest){
             final FullHttpRequest req = (FullHttpRequest)msg;
             int pathEndPos = req.uri().indexOf(63);
-
             final String path = RequestUtil.decodeComponent(pathEndPos < 0 ? req.uri() : req.uri().substring(0, pathEndPos), HttpConstants.DEFAULT_CHARSET);
             {
                 ctx.fireChannelRead(req.retain());

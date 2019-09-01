@@ -8,7 +8,7 @@
  *  io.netty.channel.group.ChannelMatchers
  *  io.netty.handler.codec.http.websocketx.CloseWebSocketFrame
  */
-package com.ob.server.websocket;
+package com.ob.server.handlers.websocket;
 
 import com.ob.server.ServerShutdown;
 import io.netty.channel.ChannelFutureListener;

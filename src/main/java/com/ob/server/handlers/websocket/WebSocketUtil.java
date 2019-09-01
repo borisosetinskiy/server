@@ -17,7 +17,7 @@
  *  io.netty.util.concurrent.GenericFutureListener
  *  org.slf4j.Logger
  */
-package com.ob.server.websocket;
+package com.ob.server.handlers.websocket;
 
 import com.ob.server.ServerLogger;
 import com.ob.server.AccessException;
@@ -28,8 +28,9 @@ import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 public class WebSocketUtil {
     public static void onError(ChannelHandlerContext ctx, Throwable cause) {
         if (cause != null) {
+            int code = 1011;
             try {
-                int code = 1011;
+
                 String message = cause.getMessage();
                 if (cause instanceof AccessException) {
                    code = 4403;
@@ -39,7 +40,9 @@ public class WebSocketUtil {
                 ctx.channel().writeAndFlush(new CloseWebSocketFrame(code, message)).addListener(ChannelFutureListener.CLOSE);
             } catch (Exception e) {
             }
-            ServerLogger.loggerProblem.error(String.format("WebSocket, channel %s, error: ", ctx.channel().id().asShortText())
+            ServerLogger.loggerProblem.error(
+                    String.format("CLOSE webSocket, channel %s, code %s error: "
+                            , ctx.channel().id().asShortText(), code)
                     , cause);
         }
     }

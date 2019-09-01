@@ -19,7 +19,7 @@ import io.netty.util.internal.StringUtil;
 import java.util.Map;
 
 public class PrintUtil {
-    static StringBuilder appendRequest(StringBuilder buf, HttpRequest req) {
+    public static StringBuilder appendRequest(StringBuilder buf, HttpRequest req) {
         PrintUtil.appendInitialLine(buf, req);
         PrintUtil.appendHeaders(buf, req.headers());
         if (req instanceof FullHttpRequest) {

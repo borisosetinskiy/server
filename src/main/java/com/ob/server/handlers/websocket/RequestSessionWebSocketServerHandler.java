@@ -12,15 +12,15 @@
  *  it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap
  *  org.slf4j.Logger
  */
-package com.ob.server.websocket;
+package com.ob.server.handlers.websocket;
 
 import com.ob.server.*;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.LastHttpContent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,14 +74,13 @@ extends WebSocketServerHandler {
     @Override
     protected void decode(ChannelHandlerContext ctx, Object o, List<Object> list) throws Exception {
         try {
-
-            if (o instanceof LastHttpContent) {
+            if (o instanceof FullHttpRequest) {
                 HttpUtils.params((HttpObject)o, params);
+                logger.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
+                        , Thread.currentThread().getName()
+                        , ctx.channel().id().asShortText()
+                        , o);
             }
-            logger.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
-                    , Thread.currentThread().getName()
-                    , ctx.channel().id().asShortText()
-                    , o);
             super.decode(ctx, o, list);
         }catch (Exception var5) {
             WebSocketUtil.onError(ctx, var5);

@@ -6,8 +6,9 @@
  *  io.netty.handler.codec.MessageToMessageDecoder
  *  io.netty.util.ReferenceCountUtil
  */
-package com.ob.server;
+package com.ob.server.handlers;
 
+import com.ob.server.Access;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 

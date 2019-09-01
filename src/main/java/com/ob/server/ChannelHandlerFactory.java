@@ -6,5 +6,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.ChannelGroup;
 
 public interface ChannelHandlerFactory {
-    ChannelHandler[] create(ChannelPipeline pipeline, RequestService requestService, ChannelGroup channels);
+    ChannelHandler[] create(ChannelPipeline pipeline
+            , RequestService requestService
+            , ChannelGroup channels);
 }

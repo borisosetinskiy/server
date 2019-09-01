@@ -19,6 +19,7 @@ import com.ob.server.session.RequestSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.LastHttpContent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -37,7 +38,7 @@ extends SimpleChannelInboundHandler<Object> {
 
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         try {
-            if (msg instanceof LastHttpContent) {
+            if (msg instanceof FullHttpRequest) {
                 HttpUtils.params((HttpObject)msg, params);
                 RequestSession requestSession
                         = requestService.process(new ChannelRequestDto(ctx, params));

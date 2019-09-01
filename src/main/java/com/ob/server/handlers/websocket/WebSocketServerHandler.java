@@ -29,7 +29,7 @@
  *  io.netty.util.concurrent.GenericFutureListener
  *  org.slf4j.Logger
  */
-package com.ob.server.websocket;
+package com.ob.server.handlers.websocket;
 
 import com.ob.server.ServerLogger;
 import io.netty.buffer.Unpooled;
