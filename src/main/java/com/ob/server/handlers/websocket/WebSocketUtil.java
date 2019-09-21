@@ -20,7 +20,7 @@
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.ServerLogger;
-import com.ob.server.AccessException;
+import com.ob.server.error.ForbiddenException;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
@@ -32,7 +32,7 @@ public class WebSocketUtil {
             try {
 
                 String message = cause.getMessage();
-                if (cause instanceof AccessException) {
+                if (cause instanceof ForbiddenException) {
                    code = 4403;
                 } else if (cause instanceof UnsupportedOperationException) {
                    code = 1010;

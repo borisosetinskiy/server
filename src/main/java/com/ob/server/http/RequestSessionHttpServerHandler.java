@@ -14,6 +14,7 @@
 package com.ob.server.http;
 
 import com.ob.server.*;
+import com.ob.server.error.ForbiddenException;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,7 +22,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.LastHttpContent;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 public class RequestSessionHttpServerHandler
@@ -43,7 +43,7 @@ extends SimpleChannelInboundHandler<Object> {
                 RequestSession requestSession
                         = requestService.process(new ChannelRequestDto(ctx, params));
                 if (requestSession == null) {
-                    throw new AccessException();
+                    throw new ForbiddenException();
                 }
             }
         }

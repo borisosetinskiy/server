@@ -9,8 +9,7 @@
  */
 package com.ob.server;
 
-import com.ob.server.handlers.AgentHandler;
-import com.ob.server.handlers.AuthenticationHandler;
+import com.ob.server.security.SecurityHandler;
 import com.ob.server.session.RequestSessionFactory;
 import io.netty.channel.ChannelHandler;
 import io.netty.handler.ssl.SslContext;
@@ -22,8 +21,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 public final class ServerConfig {
@@ -41,7 +38,7 @@ public final class ServerConfig {
     private Supplier<ChannelHandler[]> handlers;
     private int port;
     private RequestSessionFactory requestSessionFactory;
-    private AuthenticationHandler authenticationHandler;
+    private SecurityHandler securityHandler;
     private Supplier<ChannelHandler> errorHandler;
 
     public ChannelHandler getErrorHandler() {
@@ -90,12 +87,12 @@ public final class ServerConfig {
     }
 
 
-    public AuthenticationHandler getAuthenticationHandler() {
-        return authenticationHandler;
+    public SecurityHandler getSecurityHandler() {
+        return securityHandler;
     }
 
-    public ServerConfig setAuthenticationHandler(AuthenticationHandler authenticationHandler) {
-        this.authenticationHandler = authenticationHandler;
+    public ServerConfig setSecurityHandler(SecurityHandler securityHandler) {
+        this.securityHandler = securityHandler;
         return this;
     }
 

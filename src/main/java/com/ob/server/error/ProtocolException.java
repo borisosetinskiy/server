@@ -1,0 +1,23 @@
+/*
+ * Decompiled with CFR 0_132.
+ */
+package com.ob.server.error;
+
+public class ProtocolException
+extends RuntimeException {
+    private int code;
+
+    public ProtocolException(String message, int code) {
+        super(message);
+        this.code = code;
+    }
+    public ProtocolException(String message, int code, Throwable cause) {
+        super(message, cause);
+        this.code = code;
+    }
+
+    public int getCode() {
+        return code;
+    }
+}
+

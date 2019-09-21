@@ -15,6 +15,7 @@
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.*;
+import com.ob.server.error.ForbiddenException;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
 import io.netty.channel.ChannelHandlerContext;
@@ -45,7 +46,7 @@ extends WebSocketServerHandler {
             if (evt instanceof WebSocketServerHandler.HandshakeComplete) {
                 RequestSession requestSession = requestService.process(new ChannelRequestDto(ctx, params));
                 if (requestSession == null) {
-                    throw new AccessException();
+                    throw new ForbiddenException();
                 }
                 logger.debug("DECODE: Thread:{}, Channel:{}, Event:{}"
                         , Thread.currentThread().getName()

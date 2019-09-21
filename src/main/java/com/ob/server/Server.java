@@ -1,7 +1,7 @@
 package com.ob.server;
 
 import com.ob.server.handlers.AgentHandler;
-import com.ob.server.handlers.AuthenticationHandler;
+import com.ob.server.security.SecurityHandler;
 import com.ob.server.handlers.ProcessHandler;
 import com.ob.server.handlers.websocket.ErrorHandler;
 import com.ob.server.session.*;
@@ -67,9 +67,9 @@ public class Server {
                         }
                         pipeline.addLast("http", new HttpServerCodec());
                         pipeline.addLast("agent", new AgentHandler());
-                        if (serverConfig.getAuthenticationHandler() != null) {
-                            pipeline.addLast("authentication"
-                                    , serverConfig.getAuthenticationHandler());
+                        if (serverConfig.getSecurityHandler() != null) {
+                            pipeline.addLast("security"
+                                    , serverConfig.getSecurityHandler());
                         }
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
 
@@ -199,8 +199,8 @@ public class Server {
             return this;
         }
 
-        public ServerBuilder setAuthenticationHandler(AuthenticationHandler authenticationHandler) {
-            this.serverConfig.setAuthenticationHandler(authenticationHandler);
+        public ServerBuilder setAuthenticationHandler(SecurityHandler securityHandler) {
+            this.serverConfig.setSecurityHandler(securityHandler);
             return this;
         }
 
