@@ -8,7 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMessage;
 
-public class JWTSecurityProcessor extends AbstractSecurityProcessor<HttpMessage> {
+public class JWTSecurityProcessor extends AbstractSecurityProcessor {
     private JwtParser jwtParser;
     public JWTSecurityProcessor(String signingKey, SecurityProcessor securityProcessor) {
         super(securityProcessor);

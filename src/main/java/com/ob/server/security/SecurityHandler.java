@@ -8,6 +8,7 @@
  */
 package com.ob.server.security;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpMessage;
@@ -15,6 +16,7 @@ import io.netty.util.ReferenceCountUtil;
 
 import java.util.List;
 
+@ChannelHandler.Sharable
 public class SecurityHandler
         extends MessageToMessageDecoder<Object> {
     private SecurityProcessor securityProcessor;

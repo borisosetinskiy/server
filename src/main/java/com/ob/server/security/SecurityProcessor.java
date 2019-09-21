@@ -8,8 +8,8 @@ import io.netty.handler.codec.http.HttpMessage;
 
 import java.util.List;
 
-public interface SecurityProcessor<T extends HttpMessage> extends  SecurityChain{
+public interface SecurityProcessor extends  SecurityChain{
     void process(ChannelHandlerContext channelHandlerContext
-            , T o);
+            , HttpMessage o);
 }
 

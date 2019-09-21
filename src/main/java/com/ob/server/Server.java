@@ -17,6 +17,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.cors.CorsConfig;
+import io.netty.handler.codec.http.cors.CorsConfigBuilder;
+import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -67,12 +70,13 @@ public class Server {
                         }
                         pipeline.addLast("http", new HttpServerCodec());
                         pipeline.addLast("agent", new AgentHandler());
+                        if (serverConfig.getCorsConfig() != null)
+                            pipeline.addLast("cors", new CorsHandler(serverConfig.getCorsConfig()));
                         if (serverConfig.getSecurityHandler() != null) {
                             pipeline.addLast("security"
                                     , serverConfig.getSecurityHandler());
                         }
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-
                         pipeline.addLast("idle"
                                 , new IdleStateHandler(0L
                                         , 300L
@@ -134,7 +138,7 @@ public class Server {
         }
     }
 
-    public static class ServerBuilder {
+    public final static class ServerBuilder {
         private ServerConfig serverConfig;
 
         public ServerBuilder(int port, RequestSessionFactory requestSessionFactory) {
@@ -143,6 +147,11 @@ public class Server {
 
         public ServerBuilder setCertificate(String key, String cert) {
             serverConfig.setCertificate(key, cert);
+            return this;
+        }
+
+        public ServerBuilder setCorsConfig(CorsConfig corsConfig) {
+            serverConfig.setCorsConfig(corsConfig);
             return this;
         }
 
@@ -199,7 +208,7 @@ public class Server {
             return this;
         }
 
-        public ServerBuilder setAuthenticationHandler(SecurityHandler securityHandler) {
+        public ServerBuilder setSecurityHandler(SecurityHandler securityHandler) {
             this.serverConfig.setSecurityHandler(securityHandler);
             return this;
         }

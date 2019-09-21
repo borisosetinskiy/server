@@ -20,7 +20,7 @@
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.ServerLogger;
-import com.ob.server.error.ForbiddenException;
+import com.ob.server.error.*;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
@@ -36,13 +36,19 @@ public class WebSocketUtil {
                    code = 4403;
                 } else if (cause instanceof UnsupportedOperationException) {
                    code = 1010;
+                }else if (cause instanceof BadRequestException) {
+                    code = ((ProtocolException) cause).getCode();
+                }else if (cause instanceof TooManyRequestException) {
+                    code = ((ProtocolException) cause).getCode();
+                }else if (cause instanceof UnauthorizedException) {
+                    code = ((ProtocolException) cause).getCode();
                 }
                 ctx.channel().writeAndFlush(new CloseWebSocketFrame(code, message)).addListener(ChannelFutureListener.CLOSE);
             } catch (Exception e) {
             }
             ServerLogger.loggerProblem.error(
-                    String.format("CLOSE webSocket, channel %s, code %s error: "
-                            , ctx.channel().id().asShortText(), code)
+                    String.format("CLOSE webSocket, channel %s, code %s error %s "
+                            , ctx.channel().id().asShortText(), code, cause.getMessage())
                     , cause);
         }
     }

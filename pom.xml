@@ -6,7 +6,7 @@
 
     <groupId>com.ob</groupId>
     <artifactId>server-netty</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.14</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.version>1.8</maven.compiler.version>

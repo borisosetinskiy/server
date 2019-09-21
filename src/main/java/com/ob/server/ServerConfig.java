@@ -12,6 +12,7 @@ package com.ob.server;
 import com.ob.server.security.SecurityHandler;
 import com.ob.server.session.RequestSessionFactory;
 import io.netty.channel.ChannelHandler;
+import io.netty.handler.codec.http.cors.CorsConfig;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.NettyRuntime;
@@ -35,6 +36,7 @@ public final class ServerConfig {
     private int workNumber = NettyRuntime.availableProcessors() * 3;
     private ChannelHandlerFactory channelHandlerFactory;
     private boolean epoll;
+    private CorsConfig corsConfig;
     private Supplier<ChannelHandler[]> handlers;
     private int port;
     private RequestSessionFactory requestSessionFactory;
@@ -54,6 +56,14 @@ public final class ServerConfig {
         this.requestSessionFactory = requestSessionFactory;
     }
 
+    public CorsConfig getCorsConfig() {
+        return corsConfig;
+    }
+
+    public ServerConfig setCorsConfig(CorsConfig corsConfig) {
+        this.corsConfig = corsConfig;
+        return this;
+    }
 
     public ServerConfig setWorkNumber(int workNumber) {
         this.workNumber = workNumber;
@@ -68,6 +78,8 @@ public final class ServerConfig {
         this.epoll = true;
         return this;
     }
+
+
 
     public ChannelHandler[] getHandlers() {
         return handlers.get();
