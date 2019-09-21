@@ -4,8 +4,6 @@ import com.ob.server.error.BadRequestException;
 import com.ob.server.error.UnauthorizedException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMessage;
@@ -22,14 +20,25 @@ public class JWTSecurityProcessor extends AbstractSecurityProcessor<HttpMessage>
 
     @Override
     public void process(ChannelHandlerContext channelHandlerContext, HttpMessage o) {
-        HttpHeaders httpHeaders = o.headers();
+        final String token = validateAndJwtToken(o.headers());
+        if(!jwtParser.isSigned(token)){
+            throw new UnauthorizedException("Token is not valid.");
+        }
+    }
+    protected String validateAuthorizationHeader(HttpHeaders httpHeaders){
         final String bearerToken = httpHeaders.get("Authorization");
         if (bearerToken == null || !bearerToken.startsWith("Bearer")){
             throw new BadRequestException();
         }
-        final String token = bearerToken.substring(7);
-        if(!jwtParser.isSigned(token)){
-            throw new UnauthorizedException("Token is not valid.");
-        }
+        return bearerToken;
+    }
+    protected String jwtToken(String bearerToken){
+        return bearerToken.substring(7);
+    }
+    protected String validateAndJwtToken(HttpHeaders httpHeaders){
+        return jwtToken(validateAuthorizationHeader(httpHeaders));
+    }
+    protected JwtParser getJwtParser() {
+        return jwtParser;
     }
 }
