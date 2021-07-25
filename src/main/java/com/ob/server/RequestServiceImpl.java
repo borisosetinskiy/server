@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RequestServiceImpl
         implements RequestService {
     private final RequestSessionFactory requestSessionFactory;
-    private AtomicLong sessionSize = new AtomicLong();
+
 
     public RequestServiceImpl(RequestSessionFactory requestSessionFactory) {
         this.requestSessionFactory = requestSessionFactory;
@@ -34,13 +34,8 @@ public class RequestServiceImpl
         RequestSession requestSession
                 = this.requestSessionFactory
                 .newRequestSession(channelRequestDto);
-        String sessionId = channelRequestDto.getChannelContext().channel().id().asShortText();
         requestSession.onOpen();
-        ServerLogger.logger.info(String.format("Session %s. Opened. Sessions %s", sessionId, sessionSize.incrementAndGet()));
-        channelRequestDto.getChannelContext().channel().closeFuture().addListener(future -> {
-            ServerLogger.logger.info(String.format("Session %s, lifecycle %s ms. Closed. Sessions %s", sessionId, System.currentTimeMillis() - channelRequestDto.getTimestamp(), sessionSize.decrementAndGet()));
-            requestSession.onClose();
-        });
         return requestSession;
     }
-}
+
+ }

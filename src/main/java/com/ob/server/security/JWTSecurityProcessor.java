@@ -12,7 +12,9 @@ public class JWTSecurityProcessor extends AbstractSecurityProcessor {
     private JwtParser jwtParser;
     public JWTSecurityProcessor(String signingKey, SecurityProcessor securityProcessor) {
         super(securityProcessor);
-        jwtParser = Jwts.parser().setSigningKey(signingKey);
+        jwtParser = Jwts.parserBuilder()
+        .setSigningKey(signingKey)
+                .build();
     }
     public JWTSecurityProcessor(String signingKey) {
         this(signingKey, null);

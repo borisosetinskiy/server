@@ -18,6 +18,7 @@ import com.ob.server.*;
 import com.ob.server.error.ForbiddenException;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -48,10 +49,12 @@ extends WebSocketServerHandler {
                 if (requestSession == null) {
                     throw new ForbiddenException();
                 }
-                logger.debug("DECODE: Thread:{}, Channel:{}, Event:{}"
-                        , Thread.currentThread().getName()
-                        , ctx.channel().id().asShortText()
-                        , evt);
+                try {
+                    logger.debug("DECODE: Thread:{}, Channel:{}, Event:{}"
+                            , Thread.currentThread().getName()
+                            , ctx.channel().id().asShortText()
+                            , evt);
+                }catch (Exception e){}
                 ctx.channel().attr(AttributeKeys.REQUEST_SESSION_ATTR_KEY).set(requestSession);
             }
             ctx.fireUserEventTriggered(evt);
@@ -62,13 +65,19 @@ extends WebSocketServerHandler {
     }
 
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug(String.format("Channel %s registered.", ctx.channel().id().asShortText()));
-        ChannelUtil.gather(ctx, this.allChannels);
+        ServerLogger.loggerChannel.debug("Channel name {} registered. Address {}"
+                , ctx.channel().id().asShortText(), ctx.channel().remoteAddress());
+        final Channel channel = ctx.channel();
+        allChannels.add(channel);
         ctx.fireChannelRegistered();
     }
 
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug(String.format("Channel %s unregistered.", ctx.channel().id().asShortText()));
+        ServerLogger.loggerChannel.debug("Channel name {} unregistered. Address {}"
+                , ctx.channel().id().asShortText(), ctx.channel().remoteAddress());
+        try{
+            this.allChannels.remove(ctx.channel());
+        }catch (Exception e){}
         ctx.fireChannelUnregistered();
     }
 
@@ -77,10 +86,12 @@ extends WebSocketServerHandler {
         try {
             if (o instanceof FullHttpRequest) {
                 HttpUtils.params((HttpObject)o, params);
-                logger.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
-                        , Thread.currentThread().getName()
-                        , ctx.channel().id().asShortText()
-                        , o);
+                try {
+                    logger.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
+                            , Thread.currentThread().getName()
+                            , ctx.channel().id().asShortText()
+                            , o);
+                }catch (Exception e){}
             }
             super.decode(ctx, o, list);
         }catch (Exception var5) {

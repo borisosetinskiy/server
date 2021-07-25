@@ -14,8 +14,7 @@ public class WebSocketChannelHandlerFactory implements ChannelHandlerFactory {
             , RequestService requestService, ChannelGroup channels) {
         return new ChannelHandler[]{
                 new WebSocketServerCompressionHandler(),
-                new RequestSessionWebSocketServerHandler(requestService, channels),
-                new TextWebSocketServerHandler()
+                new RequestSessionWebSocketServerHandler(requestService, channels)
         };
     }
 }

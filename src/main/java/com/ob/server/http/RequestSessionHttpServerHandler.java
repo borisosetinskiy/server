@@ -48,23 +48,27 @@ extends SimpleChannelInboundHandler<Object> {
             }
         }
         catch (Exception var4) {
-            ServerLogger.loggerProblem.error(String.format("Operation read, channel %s, error %s ", ctx.channel().id().asShortText(), PrintUtil.fromStack(var4)));
+            ServerLogger.loggerProblem.error("Operation read, channel {}, error {} "
+                    , ctx.channel().id().asShortText(), PrintUtil.fromStack(var4));
         }
     }
 
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug(String.format("Channel %s registered.", ctx.channel().id().asShortText()));
+        ServerLogger.loggerChannel.debug("Channel {} registered."
+                , ctx.channel().id().asShortText());
         ChannelUtil.gather(ctx, this.allChannels);
         ctx.fireChannelRegistered();
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ServerLogger.loggerProblem.error(String.format("Channel %s, error %s ", ctx.channel().id().asShortText(), PrintUtil.fromStack(cause)));
+        ServerLogger.loggerProblem.error("Channel {}, error {} "
+                , ctx.channel().id().asShortText(), PrintUtil.fromStack(cause));
         ctx.fireExceptionCaught(cause);
     }
 
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug(String.format("Channel %s unregistered.", ctx.channel().id().asShortText()));
+        ServerLogger.loggerChannel.debug("Channel {} unregistered."
+                , ctx.channel().id().asShortText());
         ctx.fireChannelUnregistered();
     }
 }

@@ -1,6 +1,7 @@
 package com.ob.server;
 
 import com.ob.server.handlers.AgentHandler;
+import com.ob.server.handlers.OnlineHandler;
 import com.ob.server.security.SecurityHandler;
 import com.ob.server.handlers.ProcessHandler;
 import com.ob.server.handlers.websocket.ErrorHandler;
@@ -54,6 +55,8 @@ public class Server {
         ServerBootstrap bootstrap = new ServerBootstrap();
         RequestService requestService = new RequestServiceImpl(serverConfig
                 .getRequestSessionFactory());
+        AgentHandler agentHandler = new AgentHandler();
+        OnlineHandler onlineHandler = new OnlineHandler();
         ((((bootstrap.group(bossGroup, workerGroup)
                 .channel(serverConfig.isEpoll()
                         ? EpollServerSocketChannel.class
@@ -69,7 +72,7 @@ public class Server {
                                             .newHandler(socketChannel.alloc()));
                         }
                         pipeline.addLast("http", new HttpServerCodec());
-                        pipeline.addLast("agent", new AgentHandler());
+
                         if (serverConfig.getCorsConfig() != null)
                             pipeline.addLast("cors", new CorsHandler(serverConfig.getCorsConfig()));
                         if (serverConfig.getSecurityHandler() != null) {
@@ -82,7 +85,8 @@ public class Server {
                                         , 300L
                                         , 300L
                                         , TimeUnit.SECONDS));
-
+                        pipeline.addLast("online", onlineHandler);
+                        pipeline.addLast("agent", agentHandler);
                         if (serverConfig.getChannelHandlerFactory() != null) {
                             pipeline.addLast(
                                     serverConfig.getChannelHandlerFactory()
@@ -217,12 +221,9 @@ public class Server {
             this.serverConfig.setHandlers(handlers);
             return this;
         }
-
-
         public Server build() {
             return new Server(serverConfig);
         }
-
 
     }
 

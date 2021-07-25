@@ -27,9 +27,8 @@ public class TextWebSocketServerHandler
     protected void decode(ChannelHandlerContext channelHandlerContext
             , TextWebSocketFrame textWebSocketFrame
             , List<Object> list) throws Exception {
-
         String msg = textWebSocketFrame.content().toString(Charset.defaultCharset());
-        list.add(ReferenceCountUtil.retain(msg));
+        list.add(msg);
     }
 }
 

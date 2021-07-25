@@ -46,10 +46,8 @@ public class WebSocketUtil {
                 ctx.channel().writeAndFlush(new CloseWebSocketFrame(code, message)).addListener(ChannelFutureListener.CLOSE);
             } catch (Exception e) {
             }
-            ServerLogger.loggerProblem.error(
-                    String.format("CLOSE webSocket, channel %s, code %s error %s "
-                            , ctx.channel().id().asShortText(), code, cause.getMessage())
-                    , cause);
+            ServerLogger.loggerProblem.error("CLOSE webSocket, channel {}, code {} error {} "
+                            , ctx.channel().id().asShortText(), code, cause.getMessage(), cause);
         }
     }
 }
