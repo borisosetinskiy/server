@@ -5,7 +5,7 @@ package com.ob.server.error;
 
 public class ProtocolException
 extends RuntimeException {
-    private int code;
+    private final int code;
 
     public ProtocolException(String message, int code) {
         super(message);
