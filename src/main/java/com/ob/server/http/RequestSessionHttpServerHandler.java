@@ -23,7 +23,9 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RequestSessionHttpServerHandler
 extends SimpleChannelInboundHandler<Object> {
     private final RequestService requestService;
@@ -48,26 +50,26 @@ extends SimpleChannelInboundHandler<Object> {
             }
         }
         catch (Exception var4) {
-            ServerLogger.loggerProblem.error("Operation read, channel {}, error {} "
+           log.error("Operation read, channel {}, error {} "
                     , ctx.channel().id().asShortText(), PrintUtil.fromStack(var4));
         }
     }
 
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug("Channel {} registered."
+        log.debug("Channel {} registered."
                 , ctx.channel().id().asShortText());
         ChannelUtil.gather(ctx, this.allChannels);
         ctx.fireChannelRegistered();
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ServerLogger.loggerProblem.error("Channel {}, error {} "
+        log.error("Channel {}, error {} "
                 , ctx.channel().id().asShortText(), PrintUtil.fromStack(cause));
         ctx.fireExceptionCaught(cause);
     }
 
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug("Channel {} unregistered."
+        log.debug("Channel {} unregistered."
                 , ctx.channel().id().asShortText());
         ctx.fireChannelUnregistered();
     }

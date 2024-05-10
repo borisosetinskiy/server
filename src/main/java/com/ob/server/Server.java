@@ -34,8 +34,7 @@ public class Server {
             = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private ChannelFuture future;
-    private ServerConfig serverConfig;
+    private final ServerConfig serverConfig;
 
     public Server(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -46,21 +45,15 @@ public class Server {
     }
 
     public Server start() {
-        bossGroup = serverConfig.isEpoll()
-                ? new EpollEventLoopGroup(serverConfig.getBossNumber())
-                : new NioEventLoopGroup(serverConfig.getBossNumber());
-        workerGroup = serverConfig.isEpoll()
-                ? new EpollEventLoopGroup(serverConfig.getWorkNumber())
-                : new NioEventLoopGroup(serverConfig.getWorkNumber());
+        bossGroup = new NioEventLoopGroup(serverConfig.getBossNumber());
+        workerGroup =  new NioEventLoopGroup(serverConfig.getWorkNumber());
         ServerBootstrap bootstrap = new ServerBootstrap();
         RequestService requestService = new RequestServiceImpl(serverConfig
                 .getRequestSessionFactory());
         AgentHandler agentHandler = new AgentHandler();
         OnlineHandler onlineHandler = new OnlineHandler();
         ((((bootstrap.group(bossGroup, workerGroup)
-                .channel(serverConfig.isEpoll()
-                        ? EpollServerSocketChannel.class
-                        : NioServerSocketChannel.class))
+                .channel( NioServerSocketChannel.class))
                 .handler(new LoggingHandler(LogLevel.DEBUG)))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -114,8 +107,8 @@ public class Server {
                                 serverConfig.getWriteBufferWaterMarkLow()
                                 , serverConfig.getWriteBufferWaterMarkHigh()))
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
-        this.future = bootstrap.bind(serverConfig.getPort());
-        this.allChannels.add(this.future.channel());
+        ChannelFuture future = bootstrap.bind(serverConfig.getPort());
+        this.allChannels.add(future.channel());
         return this;
     }
 
@@ -207,10 +200,6 @@ public class Server {
             return this;
         }
 
-        public ServerBuilder setEpoll() {
-            this.serverConfig.setEpoll();
-            return this;
-        }
 
         public ServerBuilder setSecurityHandler(SecurityHandler securityHandler) {
             this.serverConfig.setSecurityHandler(securityHandler);

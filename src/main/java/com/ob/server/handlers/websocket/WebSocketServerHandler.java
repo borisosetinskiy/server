@@ -31,16 +31,17 @@
  */
 package com.ob.server.handlers.websocket;
 
-import com.ob.server.ServerLogger;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 public class WebSocketServerHandler
         extends MessageToMessageDecoder<Object> {
     private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY = AttributeKey.valueOf(WebSocketServerHandshaker.class, (String) "HANDSHAKER");
@@ -81,7 +82,7 @@ public class WebSocketServerHandler
     protected void decodeWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> out) {
         if (frame instanceof CloseWebSocketFrame) {
             CloseWebSocketFrame closeWebSocketFrame = (CloseWebSocketFrame) frame;
-            ServerLogger.loggerWebSocket.debug(String.format("Channel %s, CloseWebSocketFrame %s, %s", ctx.channel().id().asShortText(), closeWebSocketFrame.statusCode(), closeWebSocketFrame.reasonText()));
+            log.info(String.format("Channel %s, CloseWebSocketFrame %s, %s", ctx.channel().id().asShortText(), closeWebSocketFrame.statusCode(), closeWebSocketFrame.reasonText()));
             WebSocketServerHandshaker handshaker = WebSocketServerHandler.getHandshaker(ctx.channel());
             if (handshaker != null) {
                 frame.retain();
@@ -109,7 +110,7 @@ public class WebSocketServerHandler
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof WebSocketHandshakeException) {
-            ServerLogger.loggerProblem.error(String.format("Channel %s, error: "
+            log.error(String.format("Channel %s, error: "
                     , ctx.channel().id().asShortText()), cause);
 
             DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1

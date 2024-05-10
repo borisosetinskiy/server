@@ -24,11 +24,13 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Slf4j
 public class RequestSessionWebSocketServerHandler
 extends WebSocketServerHandler {
     private final RequestService requestService;
@@ -65,7 +67,7 @@ extends WebSocketServerHandler {
     }
 
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug("Channel name {} registered. Address {}"
+        log.info("Channel name {} registered. Address {}"
                 , ctx.channel().id().asShortText(), ctx.channel().remoteAddress());
         final Channel channel = ctx.channel();
         allChannels.add(channel);
@@ -73,7 +75,7 @@ extends WebSocketServerHandler {
     }
 
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        ServerLogger.loggerChannel.debug("Channel name {} unregistered. Address {}"
+        log.info("Channel name {} unregistered. Address {}"
                 , ctx.channel().id().asShortText(), ctx.channel().remoteAddress());
         try{
             this.allChannels.remove(ctx.channel());

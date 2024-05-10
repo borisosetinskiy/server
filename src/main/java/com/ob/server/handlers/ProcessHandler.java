@@ -1,34 +1,34 @@
 package com.ob.server.handlers;
 
 import com.ob.server.AttributeKeys;
-import com.ob.server.ServerLogger;
-import com.ob.server.handlers.websocket.WebSocketUtil;
 import com.ob.server.session.RequestSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import io.netty.util.ReferenceCountUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 public class ProcessHandler extends MessageToMessageDecoder<Object> {
     private final AtomicLong totalRequest = new AtomicLong();
 
     private AtomicLong time = new AtomicLong(0);
+
     @Override
     protected void decode(ChannelHandlerContext ctx
             , Object message
             , List<Object> list) throws Exception {
         if (message != null) {
-            if (ServerLogger.loggerMessage.isDebugEnabled()) {
-                if(time.get() == 0){
+            if (log.isDebugEnabled()) {
+                if (time.get() == 0) {
                     time.addAndGet(System.currentTimeMillis());
                 }
-                ServerLogger.loggerMessage.debug("Channel {}, requests {}, ip {}, time {} sec"
+                log.debug("Channel {}, requests {}, ip {}, time {} sec"
                         , ctx.channel().id().asShortText()
                         , totalRequest.incrementAndGet()
                         , ctx.channel().remoteAddress()
-                , (System.currentTimeMillis() - time.get())/1000);
+                        , (System.currentTimeMillis() - time.get()) / 1000);
             }
             io.netty.util.Attribute<RequestSession> attribute
                     = ctx.channel()

@@ -17,7 +17,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.NettyRuntime;
 
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,8 +25,6 @@ import java.util.function.Supplier;
 
 public final class ServerConfig {
     private SslContext sslCtx;
-    private File certFile;
-    private File keyFile;
     private int receiveBuffer = 32 * 1024;
     private int sendBuffer = 64 * 1024;
     private int writeBufferWaterMarkLow = 8 * 1024;
@@ -38,8 +35,8 @@ public final class ServerConfig {
     private boolean epoll;
     private CorsConfig corsConfig;
     private Supplier<ChannelHandler[]> handlers;
-    private int port;
-    private RequestSessionFactory requestSessionFactory;
+    private final int port;
+    private final RequestSessionFactory requestSessionFactory;
     private SecurityHandler securityHandler;
     private Supplier<ChannelHandler> errorHandler;
 
@@ -69,17 +66,6 @@ public final class ServerConfig {
         this.workNumber = workNumber;
         return this;
     }
-
-    public boolean isEpoll() {
-        return epoll;
-    }
-
-    public ServerConfig setEpoll() {
-        this.epoll = true;
-        return this;
-    }
-
-
 
     public ChannelHandler[] getHandlers() {
         return handlers.get();
@@ -117,17 +103,18 @@ public final class ServerConfig {
     }
 
     public void setCertificate(String key, String cert) {
+        assert key != null;
+        assert cert != null;
         Path keyPath = Paths.get(key);
         Path certPath = Paths.get(cert);
-        if (cert == null || key == null
-                || !Files.exists(keyPath)
+        if (!Files.exists(keyPath)
                 || !Files.exists(certPath)
-        ) throw new RuntimeException();
+        ) throw new RuntimeException("Key or cert file not found");
 
-        this.certFile = certPath.toFile();
-        this.keyFile = keyPath.toFile();
+        File certFile = certPath.toFile();
+        File keyFile = keyPath.toFile();
         try {
-            this.sslCtx = SslContextBuilder.forServer(this.certFile, this.keyFile).build();
+            this.sslCtx = SslContextBuilder.forServer(certFile, keyFile).build();
         } catch (Exception var2) {
             throw new RuntimeException(var2);
         }

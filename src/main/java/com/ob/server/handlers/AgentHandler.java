@@ -2,16 +2,17 @@
 package com.ob.server.handlers;
 
 import com.ob.server.PrintUtil;
-import com.ob.server.ServerLogger;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.ReferenceCountUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 
+@Slf4j
 @ChannelHandler.Sharable
 public class AgentHandler
 extends MessageToMessageDecoder<Object> {
@@ -20,8 +21,8 @@ extends MessageToMessageDecoder<Object> {
         if (o instanceof HttpRequest) {
             HttpRequest request = (HttpRequest)o;
             StringBuilder stringBuilder = new StringBuilder();
-            if(ServerLogger.agentLogger.isDebugEnabled()){
-                ServerLogger.agentLogger.debug(
+            if(log.isDebugEnabled()){
+                log.debug(
                         "Channel {}, Address {}, Request {}"
                         , channelHandlerContext.channel().id().asShortText()
                         , ((InetSocketAddress)channelHandlerContext.channel().remoteAddress())
@@ -29,7 +30,7 @@ extends MessageToMessageDecoder<Object> {
                         , PrintUtil.appendRequest(stringBuilder, request));
             }
         }
-        list.add(ReferenceCountUtil.retain((Object)o));
+        list.add(ReferenceCountUtil.retain(o));
     }
 }
 

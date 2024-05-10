@@ -19,12 +19,13 @@
  */
 package com.ob.server.handlers.websocket;
 
-import com.ob.server.ServerLogger;
 import com.ob.server.error.*;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class WebSocketUtil {
     public static void onError(ChannelHandlerContext ctx, Throwable cause) {
         if (cause != null) {
@@ -46,7 +47,7 @@ public class WebSocketUtil {
                 ctx.channel().writeAndFlush(new CloseWebSocketFrame(code, message)).addListener(ChannelFutureListener.CLOSE);
             } catch (Exception e) {
             }
-            ServerLogger.loggerProblem.error("CLOSE webSocket, channel {}, code {} error {} "
+            log.error("CLOSE webSocket, channel {}, code {} error {} "
                             , ctx.channel().id().asShortText(), code, cause.getMessage(), cause);
         }
     }
