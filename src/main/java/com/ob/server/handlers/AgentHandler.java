@@ -1,4 +1,3 @@
-
 package com.ob.server.handlers;
 
 import com.ob.server.PrintUtil;
@@ -15,20 +14,19 @@ import java.util.List;
 @Slf4j
 @ChannelHandler.Sharable
 public class AgentHandler
-extends MessageToMessageDecoder<Object> {
+        extends MessageToMessageDecoder<Object> {
 
     protected void decode(ChannelHandlerContext channelHandlerContext, Object o, List<Object> list) throws Exception {
-        if (o instanceof HttpRequest) {
-            HttpRequest request = (HttpRequest)o;
+        if (o instanceof HttpRequest ) {
+            HttpRequest request = (HttpRequest) o;
             StringBuilder stringBuilder = new StringBuilder();
-            if(log.isDebugEnabled()){
-                log.debug(
-                        "Channel {}, Address {}, Request {}"
-                        , channelHandlerContext.channel().id().asShortText()
-                        , ((InetSocketAddress)channelHandlerContext.channel().remoteAddress())
-                                .getAddress()
-                        , PrintUtil.appendRequest(stringBuilder, request));
-            }
+            log.info(
+                    "Channel {}, Address {}, Request {}"
+                    , channelHandlerContext.channel().id().asShortText()
+                    , ((InetSocketAddress) channelHandlerContext.channel().remoteAddress())
+                            .getAddress()
+                    , PrintUtil.appendRequest(stringBuilder, request));
+
         }
         list.add(ReferenceCountUtil.retain(o));
     }

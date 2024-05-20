@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.channel.ChannelInitializer
  *  io.netty.channel.group.ChannelGroup

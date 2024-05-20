@@ -2,14 +2,13 @@ package com.ob.server;
 
 import com.ob.server.handlers.AgentHandler;
 import com.ob.server.handlers.OnlineHandler;
-import com.ob.server.security.SecurityHandler;
 import com.ob.server.handlers.ProcessHandler;
 import com.ob.server.handlers.websocket.ErrorHandler;
-import com.ob.server.session.*;
+import com.ob.server.security.SecurityHandler;
+import com.ob.server.session.RequestService;
+import com.ob.server.session.RequestSessionFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -19,12 +18,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.cors.CorsConfig;
-import io.netty.handler.codec.http.cors.CorsConfigBuilder;
 import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import lombok.Getter;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -32,9 +32,9 @@ import java.util.function.Supplier;
 public class Server {
     private final ChannelGroup allChannels
             = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final ServerConfig serverConfig;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private final ServerConfig serverConfig;
 
     public Server(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
@@ -46,15 +46,15 @@ public class Server {
 
     public Server start() {
         bossGroup = new NioEventLoopGroup(serverConfig.getBossNumber());
-        workerGroup =  new NioEventLoopGroup(serverConfig.getWorkNumber());
+        workerGroup = new NioEventLoopGroup(serverConfig.getWorkNumber());
         ServerBootstrap bootstrap = new ServerBootstrap();
         RequestService requestService = new RequestServiceImpl(serverConfig
                 .getRequestSessionFactory());
         AgentHandler agentHandler = new AgentHandler();
-        OnlineHandler onlineHandler = new OnlineHandler();
+        OnlineHandler onlineHandler = new OnlineHandler(serverConfig.getMeterService());
         ((((bootstrap.group(bossGroup, workerGroup)
-                .channel( NioServerSocketChannel.class))
-                .handler(new LoggingHandler(LogLevel.DEBUG)))
+                .channel(NioServerSocketChannel.class))
+                .handler(new LoggingHandler(LogLevel.INFO)))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -72,13 +72,15 @@ public class Server {
                             pipeline.addLast("security"
                                     , serverConfig.getSecurityHandler());
                         }
+                        pipeline.addLast("online", onlineHandler);
                         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
                         pipeline.addLast("idle"
-                                , new IdleStateHandler(0L
-                                        , 300L
-                                        , 300L
+                                , new IdleStateHandler(serverConfig.getReaderIdleTime()
+                                        , serverConfig.getWriterIdleTime()
+                                        , serverConfig.getAllIdleTime()
                                         , TimeUnit.SECONDS));
-                        pipeline.addLast("online", onlineHandler);
+                        if(serverConfig.isChunked())
+                            pipeline.addLast(new ChunkedWriteHandler());
                         pipeline.addLast("agent", agentHandler);
                         if (serverConfig.getChannelHandlerFactory() != null) {
                             pipeline.addLast(
@@ -135,8 +137,9 @@ public class Server {
         }
     }
 
+    @Getter
     public final static class ServerBuilder {
-        private ServerConfig serverConfig;
+        private final ServerConfig serverConfig;
 
         public ServerBuilder(int port, RequestSessionFactory requestSessionFactory) {
             serverConfig = new ServerConfig(port, requestSessionFactory);
@@ -210,6 +213,7 @@ public class Server {
             this.serverConfig.setHandlers(handlers);
             return this;
         }
+
         public Server build() {
             return new Server(serverConfig);
         }

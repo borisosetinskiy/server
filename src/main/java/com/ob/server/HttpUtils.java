@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.buffer.ByteBuf
  *  io.netty.buffer.ByteBufHolder
@@ -40,16 +40,16 @@ public final class HttpUtils {
 
     public static void sendErrorAndCloseChannel(ChannelRequestDto channelRequestDto, HttpResponseStatus status) {
         DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status);
-        HttpUtils.sendResponseAndCloseChannel(channelRequestDto, (HttpResponse)httpResponse);
+        HttpUtils.sendResponseAndCloseChannel(channelRequestDto, (HttpResponse) httpResponse);
     }
 
     public static void sendErrorWithTextAndCloseChannel(ChannelRequestDto channelRequestDto, HttpResponseStatus status, String text) {
-        DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.wrappedBuffer((byte[])text.getBytes(CharsetUtil.UTF_8)));
-        HttpUtils.sendResponseAndCloseChannel(channelRequestDto, (HttpResponse)httpResponse);
+        DefaultFullHttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.wrappedBuffer((byte[]) text.getBytes(CharsetUtil.UTF_8)));
+        HttpUtils.sendResponseAndCloseChannel(channelRequestDto, (HttpResponse) httpResponse);
     }
 
     public static void sendResponseAndCloseChannel(ChannelRequestDto channelRequestDto, HttpResponse response) {
-        channelRequestDto.getChannelContext().writeAndFlush((Object)response).addListener(ChannelFutureListener.CLOSE);
+        channelRequestDto.getChannelContext().writeAndFlush((Object) response).addListener(ChannelFutureListener.CLOSE);
     }
 
     public static Object2ObjectArrayMap params(HttpObject o, Object2ObjectArrayMap params) {
@@ -58,7 +58,7 @@ public final class HttpUtils {
             params = new Object2ObjectArrayMap();
         }
         if (o instanceof HttpRequest) {
-            HttpRequest httpRequest = (HttpRequest)o;
+            HttpRequest httpRequest = (HttpRequest) o;
             int pathEndPos = httpRequest.uri().indexOf(63);
             if (pathEndPos != -1) {
                 if (pathEndPos >= 0 && pathEndPos < httpRequest.uri().length() - 1) {
@@ -73,7 +73,7 @@ public final class HttpUtils {
                     params.put(entry.getKey(), entry.getValue());
                 }
             }
-        } else if (o instanceof HttpContent && (content = (HttpContent)o).content() != null && content.content().isReadable()) {
+        } else if (o instanceof HttpContent && (content = (HttpContent) o).content() != null && content.content().isReadable()) {
             byte[] buffer = new byte[content.content().readableBytes()];
             content.content().readBytes(buffer);
             RequestUtil.decodeParams(new String(buffer), params);
@@ -94,7 +94,7 @@ public final class HttpUtils {
     }
 
     public static Object safeDuplicate(Object message) {
-        return message instanceof ByteBuf ? ((ByteBuf)message).retainedDuplicate() : (message instanceof ByteBufHolder ? ((ByteBufHolder)message).retainedDuplicate() : ReferenceCountUtil.retain((Object)message));
+        return message instanceof ByteBuf ? ((ByteBuf) message).retainedDuplicate() : (message instanceof ByteBufHolder ? ((ByteBufHolder) message).retainedDuplicate() : ReferenceCountUtil.retain((Object) message));
     }
 }
 

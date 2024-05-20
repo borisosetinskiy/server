@@ -4,7 +4,7 @@
 package com.ob.server.error;
 
 public class TooManyRequestException
-extends ProtocolException {
+        extends ProtocolException {
     public TooManyRequestException() {
         super("429, Too Many Requests", 429);
     }

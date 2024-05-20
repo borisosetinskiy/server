@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.channel.group.ChannelGroup
  *  io.netty.channel.group.ChannelGroupFuture
@@ -17,7 +17,7 @@ import io.netty.channel.group.ChannelMatchers;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 
 public class WebSocketServerShutdown
-implements ServerShutdown {
+        implements ServerShutdown {
     private ChannelGroup group;
 
     @Override

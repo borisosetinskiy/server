@@ -73,6 +73,28 @@ public class WebSocketServerHandler
         this.allowMaskMismatch = allowMaskMismatch;
     }
 
+    static WebSocketServerHandshaker getHandshaker(Channel channel) {
+        return channel.attr(HANDSHAKER_ATTR_KEY).get();
+    }
+
+    static void setHandshaker(Channel channel, WebSocketServerHandshaker handshaker) {
+        channel.attr(HANDSHAKER_ATTR_KEY).set(handshaker);
+    }
+
+    static ChannelHandler forbiddenHttpRequestResponder() {
+        return new ChannelInboundHandlerAdapter() {
+            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                if (msg instanceof FullHttpRequest) {
+                    ((FullHttpRequest) msg).release();
+                    DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN);
+                    ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                } else {
+                    ctx.fireChannelRead(msg);
+                }
+            }
+        };
+    }
+
     protected void decode(ChannelHandlerContext ctx, Object object, List<Object> out) throws Exception {
         if (object instanceof WebSocketFrame) {
             this.decodeWebSocketFrame(ctx, (WebSocketFrame) object, out);
@@ -121,29 +143,6 @@ public class WebSocketServerHandler
         }
         WebSocketUtil.onError(ctx, cause);
     }
-
-    static WebSocketServerHandshaker getHandshaker(Channel channel) {
-        return channel.attr(HANDSHAKER_ATTR_KEY).get();
-    }
-
-    static void setHandshaker(Channel channel, WebSocketServerHandshaker handshaker) {
-        channel.attr(HANDSHAKER_ATTR_KEY).set(handshaker);
-    }
-
-    static ChannelHandler forbiddenHttpRequestResponder() {
-        return new ChannelInboundHandlerAdapter() {
-            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                if (msg instanceof FullHttpRequest) {
-                    ((FullHttpRequest) msg).release();
-                    DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN);
-                    ctx.channel().writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-                } else {
-                    ctx.fireChannelRead(msg);
-                }
-            }
-        };
-    }
-
 
     public static final class HandshakeComplete {
         private final String requestUri;

@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.channel.Channel
  *  io.netty.channel.ChannelHandlerContext
@@ -13,7 +13,10 @@
  */
 package com.ob.server.http;
 
-import com.ob.server.*;
+import com.ob.server.ChannelRequestDto;
+import com.ob.server.ChannelUtil;
+import com.ob.server.HttpUtils;
+import com.ob.server.PrintUtil;
 import com.ob.server.error.ForbiddenException;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
@@ -27,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RequestSessionHttpServerHandler
-extends SimpleChannelInboundHandler<Object> {
+        extends SimpleChannelInboundHandler<Object> {
     private final RequestService requestService;
     private final ChannelGroup allChannels;
 
@@ -41,16 +44,15 @@ extends SimpleChannelInboundHandler<Object> {
     public void channelRead0(ChannelHandlerContext ctx, Object msg) {
         try {
             if (msg instanceof FullHttpRequest) {
-                HttpUtils.params((HttpObject)msg, params);
+                HttpUtils.params((HttpObject) msg, params);
                 RequestSession requestSession
                         = requestService.process(new ChannelRequestDto(ctx, params));
                 if (requestSession == null) {
                     throw new ForbiddenException();
                 }
             }
-        }
-        catch (Exception var4) {
-           log.error("Operation read, channel {}, error {} "
+        } catch (Exception var4) {
+            log.error("Operation read, channel {}, error {} "
                     , ctx.channel().id().asShortText(), PrintUtil.fromStack(var4));
         }
     }

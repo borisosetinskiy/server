@@ -16,55 +16,95 @@ import io.netty.handler.codec.http.cors.CorsConfig;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.util.NettyRuntime;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+
 public final class ServerConfig {
+    @Getter
+    private final int port;
+    @Getter
+    private final RequestSessionFactory requestSessionFactory;
+    @Getter
+    @Setter
+    MeterService meterService = new MeterService() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        @Override
+        public int incrementCounter(String counterName, String... tags) {
+            return counter.incrementAndGet();
+        }
+
+        @Override
+        public int decrementCounter(String counterName, String... tags) {
+            return counter.incrementAndGet();
+        }
+
+        @Override
+        public void record(String key, long start, String... tags) {
+
+        }
+    };
+    @Getter
+    @Setter
+    private long readerIdleTime = 60000;
+    @Getter
+    @Setter
+    private long writerIdleTime = 300000;
+    @Getter
+    @Setter
+    private long allIdleTime = 300000;
+    @Getter
     private SslContext sslCtx;
+    @Getter
+    @Setter
+    private boolean chunked;
+    @Setter
+    @Getter
     private int receiveBuffer = 32 * 1024;
+    @Setter
+    @Getter
     private int sendBuffer = 64 * 1024;
+    @Setter
+    @Getter
     private int writeBufferWaterMarkLow = 8 * 1024;
+    @Setter
+    @Getter
     private int writeBufferWaterMarkHigh = 32 * 1024;
+    @Setter
+    @Getter
     private int bossNumber = 1;
+    @Setter
+    @Getter
     private int workNumber = NettyRuntime.availableProcessors() * 3;
+    @Setter
+    @Getter
     private ChannelHandlerFactory channelHandlerFactory;
     private boolean epoll;
+    @Setter
+    @Getter
     private CorsConfig corsConfig;
-    private Supplier<ChannelHandler[]> handlers;
-    private final int port;
-    private final RequestSessionFactory requestSessionFactory;
+    private Supplier<ChannelHandler[]> handlers = () -> null;
+    @Setter
+    @Getter
     private SecurityHandler securityHandler;
+    @Setter
     private Supplier<ChannelHandler> errorHandler;
-
-    public ChannelHandler getErrorHandler() {
-        return errorHandler.get();
-    }
-
-    public void setErrorHandler(Supplier<ChannelHandler> errorHandler) {
-        this.errorHandler = errorHandler;
-    }
 
     public ServerConfig(int port, RequestSessionFactory requestSessionFactory) {
         this.port = port;
         this.requestSessionFactory = requestSessionFactory;
     }
 
-    public CorsConfig getCorsConfig() {
-        return corsConfig;
-    }
-
-    public ServerConfig setCorsConfig(CorsConfig corsConfig) {
-        this.corsConfig = corsConfig;
-        return this;
-    }
-
-    public ServerConfig setWorkNumber(int workNumber) {
-        this.workNumber = workNumber;
-        return this;
+    public ChannelHandler getErrorHandler() {
+        return errorHandler.get();
     }
 
     public ChannelHandler[] getHandlers() {
@@ -76,27 +116,6 @@ public final class ServerConfig {
         return this;
     }
 
-    public int getPort() {
-        return port;
-    }
-
-    public RequestSessionFactory getRequestSessionFactory() {
-        return requestSessionFactory;
-    }
-
-
-    public SecurityHandler getSecurityHandler() {
-        return securityHandler;
-    }
-
-    public ServerConfig setSecurityHandler(SecurityHandler securityHandler) {
-        this.securityHandler = securityHandler;
-        return this;
-    }
-
-    public SslContext getSslCtx() {
-        return this.sslCtx;
-    }
 
     public boolean isSsl() {
         return sslCtx != null;
@@ -118,64 +137,6 @@ public final class ServerConfig {
         } catch (Exception var2) {
             throw new RuntimeException(var2);
         }
-    }
-
-    public com.ob.server.ChannelHandlerFactory getChannelHandlerFactory() {
-        return channelHandlerFactory;
-    }
-
-    public ServerConfig setChannelHandlerFactory(com.ob.server.ChannelHandlerFactory channelHandlerFactory) {
-        this.channelHandlerFactory = channelHandlerFactory;
-        return this;
-    }
-
-    public int getReceiveBuffer() {
-        return receiveBuffer;
-    }
-
-    public ServerConfig setReceiveBuffer(int receiveBuffer) {
-        this.receiveBuffer = receiveBuffer;
-        return this;
-    }
-
-    public int getSendBuffer() {
-        return sendBuffer;
-    }
-
-    public ServerConfig setSendBuffer(int sendBuffer) {
-        this.sendBuffer = sendBuffer;
-        return this;
-    }
-
-    public int getWriteBufferWaterMarkLow() {
-        return writeBufferWaterMarkLow;
-    }
-
-    public ServerConfig setWriteBufferWaterMarkLow(int writeBufferWaterMarkLow) {
-        this.writeBufferWaterMarkLow = writeBufferWaterMarkLow;
-        return this;
-    }
-
-    public int getWriteBufferWaterMarkHigh() {
-        return writeBufferWaterMarkHigh;
-    }
-
-    public ServerConfig setWriteBufferWaterMarkHigh(int writeBufferWaterMarkHigh) {
-        this.writeBufferWaterMarkHigh = writeBufferWaterMarkHigh;
-        return this;
-    }
-
-    public int getBossNumber() {
-        return bossNumber;
-    }
-
-    public ServerConfig setBossNumber(int bossNumber) {
-        this.bossNumber = bossNumber;
-        return this;
-    }
-
-    public int getWorkNumber() {
-        return workNumber;
     }
 
 

@@ -14,12 +14,9 @@
  */
 package com.ob.server;
 
-import com.ob.server.session.HeartBeatService;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
 import com.ob.server.session.RequestSessionFactory;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 public class RequestServiceImpl
         implements RequestService {
@@ -29,6 +26,7 @@ public class RequestServiceImpl
     public RequestServiceImpl(RequestSessionFactory requestSessionFactory) {
         this.requestSessionFactory = requestSessionFactory;
     }
+
     @Override
     public RequestSession process(ChannelRequestDto channelRequestDto) throws Exception {
         RequestSession requestSession
@@ -38,4 +36,4 @@ public class RequestServiceImpl
         return requestSession;
     }
 
- }
+}

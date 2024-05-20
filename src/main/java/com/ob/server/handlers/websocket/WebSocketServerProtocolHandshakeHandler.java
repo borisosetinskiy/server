@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.channel.Channel
  *  io.netty.channel.ChannelFuture
@@ -35,7 +35,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.handler.ssl.SslHandler;
 
 public class WebSocketServerProtocolHandshakeHandler
-extends ChannelInboundHandlerAdapter {
+        extends ChannelInboundHandlerAdapter {
     private final String subprotocols;
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
@@ -48,12 +48,20 @@ extends ChannelInboundHandlerAdapter {
         this.allowMaskMismatch = allowMaskMismatch;
     }
 
+    private static String getWebSocketLocation(ChannelPipeline cp, HttpRequest req, String path) {
+        String protocol = "ws";
+        if (cp.get(SslHandler.class) != null) {
+            protocol = "wss";
+        }
+        return protocol + "://" + req.headers().get(HttpHeaderNames.HOST) + path;
+    }
+
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-        if(msg instanceof  FullHttpRequest){
-            final FullHttpRequest req = (FullHttpRequest)msg;
+        if (msg instanceof FullHttpRequest) {
+            final FullHttpRequest req = (FullHttpRequest) msg;
             int pathEndPos = req.uri().indexOf(63);
             final String path = RequestUtil.decodeComponent(pathEndPos < 0 ? req.uri() : req.uri().substring(0, pathEndPos), HttpConstants.DEFAULT_CHARSET);
             {
@@ -78,7 +86,6 @@ extends ChannelInboundHandlerAdapter {
                             if (!future.isSuccess()) {
                                 ctx.fireExceptionCaught(future.cause());
                             } else {
-//                            ctx.fireUserEventTriggered(WebSocketServerHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE);
                                 ctx.fireUserEventTriggered(new WebSocketServerHandler.HandshakeComplete(req.uri()
                                         , req.headers(), handshaker.selectedSubprotocol()));
                             }
@@ -86,23 +93,14 @@ extends ChannelInboundHandlerAdapter {
                         WebSocketServerHandler.setHandshaker(ctx.channel(), handshaker);
                         ctx.pipeline().replace(this, "WS403Responder", WebSocketServerHandler.forbiddenHttpRequestResponder());
                     }
-                }
-                finally {
+                } finally {
                     req.release();
                 }
             }
-        }else {
+        } else {
             ctx.fireChannelRead(msg);
         }
 
-    }
-
-    private static String getWebSocketLocation(ChannelPipeline cp, HttpRequest req, String path) {
-        String protocol = "ws";
-        if (cp.get(SslHandler.class) != null) {
-            protocol = "wss";
-        }
-        return protocol + "://" + req.headers().get(HttpHeaderNames.HOST) + path;
     }
 
 }

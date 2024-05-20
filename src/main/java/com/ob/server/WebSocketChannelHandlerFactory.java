@@ -1,8 +1,7 @@
 package com.ob.server;
 
-import com.ob.server.session.RequestService;
 import com.ob.server.handlers.websocket.RequestSessionWebSocketServerHandler;
-import com.ob.server.handlers.websocket.TextWebSocketServerHandler;
+import com.ob.server.session.RequestService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.ChannelGroup;

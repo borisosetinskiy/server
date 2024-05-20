@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ProcessHandler extends MessageToMessageDecoder<Object> {
     private final AtomicLong totalRequest = new AtomicLong();
 
-    private AtomicLong time = new AtomicLong(0);
+    private final AtomicLong time = new AtomicLong(0);
 
     @Override
     protected void decode(ChannelHandlerContext ctx

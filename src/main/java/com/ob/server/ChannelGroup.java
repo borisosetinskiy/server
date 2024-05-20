@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.buffer.ByteBuf
  *  io.netty.buffer.ByteBufHolder
@@ -35,16 +35,14 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChannelGroup
-extends AbstractSet<Channel> {
+        extends AbstractSet<Channel> {
     private static final AtomicInteger nextId = new AtomicInteger();
     private final String name;
     private final EventExecutor executor;
     private final ConcurrentMap<ChannelId, Channel> channels = PlatformDependent.newConcurrentHashMap();
-    private final ChannelFutureListener remover = future -> this.remove(future.channel());
-
     public ChannelGroup(EventExecutor executor) {
         this("group-0x" + Integer.toHexString(nextId.incrementAndGet()), executor);
-    }
+    }    private final ChannelFutureListener remover = future -> this.remove(future.channel());
 
     public ChannelGroup(String name, EventExecutor executor) {
         if (name == null) {
@@ -52,6 +50,13 @@ extends AbstractSet<Channel> {
         }
         this.name = name;
         this.executor = executor;
+    }
+
+    private static Object safeDuplicate(Object message) {
+        if (message instanceof ByteBuf) {
+            return ((ByteBuf) message).retainedDuplicate();
+        }
+        return message instanceof ByteBufHolder ? ((ByteBufHolder) message).retainedDuplicate() : ReferenceCountUtil.retain((Object) message);
     }
 
     public String name() {
@@ -75,7 +80,7 @@ extends AbstractSet<Channel> {
     @Override
     public boolean contains(Object o) {
         if (o instanceof Channel) {
-            Channel c = (Channel)o;
+            Channel c = (Channel) o;
             return this.channels.containsValue(c);
         }
         return false;
@@ -97,7 +102,7 @@ extends AbstractSet<Channel> {
         if (o instanceof ChannelId) {
             c = this.channels.remove(o);
         } else if (o instanceof Channel) {
-            c = (Channel)o;
+            c = (Channel) o;
             c = this.channels.remove(c.id());
         }
         if (c == null) {
@@ -127,13 +132,6 @@ extends AbstractSet<Channel> {
         return this.channels.values().toArray(a);
     }
 
-    private static Object safeDuplicate(Object message) {
-        if (message instanceof ByteBuf) {
-            return ((ByteBuf)message).retainedDuplicate();
-        }
-        return message instanceof ByteBufHolder ? ((ByteBufHolder)message).retainedDuplicate() : ReferenceCountUtil.retain((Object)message);
-    }
-
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
@@ -145,11 +143,10 @@ extends AbstractSet<Channel> {
             for (Channel c : this) {
                 try {
                     c.write(ChannelGroup.safeDuplicate(message), c.voidPromise());
+                } catch (Exception exception) {
                 }
-                catch (Exception exception) {}
             }
-        }
-        finally {
+        } finally {
             ReferenceCountUtil.release(message);
         }
         return this;
@@ -160,8 +157,8 @@ extends AbstractSet<Channel> {
             try {
                 if (!c.isWritable()) continue;
                 c.flush();
+            } catch (Exception exception) {
             }
-            catch (Exception exception) {}
         }
         return this;
     }
@@ -178,12 +175,14 @@ extends AbstractSet<Channel> {
 
     public int compareTo(io.netty.channel.group.ChannelGroup o) {
         int v = this.name().compareTo(o.name());
-        return v != 0 ? v : System.identityHashCode(this) - System.identityHashCode((Object)o);
+        return v != 0 ? v : System.identityHashCode(this) - System.identityHashCode((Object) o);
     }
 
     @Override
     public String toString() {
         return StringUtil.simpleClassName(this) + "(name: " + this.name() + ", size: " + this.size() + ')';
     }
+
+
 }
 

@@ -12,8 +12,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HeartBeatServiceImpl
         implements HeartBeatService {
     private final ScheduledExecutorService scheduler;
-    private Map<String, HeartBeat> sessions = new ConcurrentHashMap<>(64, 0.75f, 64);
     private final HeartBeatFactory heartBeatFactory;
+    private Map<String, HeartBeat> sessions = new ConcurrentHashMap<>(64, 0.75f, 64);
+
     public HeartBeatServiceImpl(ScheduledExecutorService scheduler, HeartBeatFactory heartBeatFactory) {
         this.scheduler = scheduler;
         this.heartBeatFactory = heartBeatFactory;
@@ -38,7 +39,7 @@ public class HeartBeatServiceImpl
 
     @Override
     public void addSession(String key, RequestSession requestSession) {
-        this.sessions.put(key,  new HeartBeat(requestSession));
+        this.sessions.put(key, new HeartBeat(requestSession));
     }
 
     @Override
@@ -46,13 +47,14 @@ public class HeartBeatServiceImpl
         this.sessions.remove(key);
     }
 
-    class HeartBeat{
+    class HeartBeat {
         private AtomicLong lastOperation = new AtomicLong();
         private RequestSession requestSession;
 
         public HeartBeat(RequestSession requestSession) {
             this.requestSession = requestSession;
         }
+
         public void heartBeat() {
             if (System.currentTimeMillis() - lastOperation.get() >= 30) {
                 requestSession.onWrite(heartBeatFactory.create());

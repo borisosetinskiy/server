@@ -34,21 +34,21 @@ public class WebSocketUtil {
 
                 String message = cause.getMessage();
                 if (cause instanceof ForbiddenException) {
-                   code = 4403;
+                    code = 4403;
                 } else if (cause instanceof UnsupportedOperationException) {
-                   code = 1010;
-                }else if (cause instanceof BadRequestException) {
+                    code = 1010;
+                } else if (cause instanceof BadRequestException) {
                     code = ((ProtocolException) cause).getCode();
-                }else if (cause instanceof TooManyRequestException) {
+                } else if (cause instanceof TooManyRequestException) {
                     code = ((ProtocolException) cause).getCode();
-                }else if (cause instanceof UnauthorizedException) {
+                } else if (cause instanceof UnauthorizedException) {
                     code = ((ProtocolException) cause).getCode();
                 }
                 ctx.channel().writeAndFlush(new CloseWebSocketFrame(code, message)).addListener(ChannelFutureListener.CLOSE);
             } catch (Exception e) {
             }
             log.error("CLOSE webSocket, channel {}, code {} error {} "
-                            , ctx.channel().id().asShortText(), code, cause.getMessage(), cause);
+                    , ctx.channel().id().asShortText(), code, cause.getMessage(), cause);
         }
     }
 }

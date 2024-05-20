@@ -1,21 +1,26 @@
 package com.ob.server.handlers;
 
-import io.netty.channel.*;
+import com.ob.server.MeterService;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.atomic.AtomicLong;
-
+@EqualsAndHashCode(callSuper = false)
 @Slf4j
 @ChannelHandler.Sharable
+@Data
 public class OnlineHandler extends ChannelInboundHandlerAdapter {
-    private final AtomicLong online = new AtomicLong();
+    final MeterService meterService;
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         final String sessionId = ctx.channel().id().asShortText();
         log.info("Session {}. online. Sessions {}"
                 , sessionId
-                , online.incrementAndGet());
+                , meterService.incrementCounter("online"));
         ctx.fireChannelRegistered();
     }
 
@@ -26,7 +31,7 @@ public class OnlineHandler extends ChannelInboundHandlerAdapter {
 
         log.info("Session {}, offline. Sessions {}"
                 , sessionId
-                , online.decrementAndGet());
+                , meterService.decrementCounter("online"));
 
         ctx.fireChannelUnregistered();
     }

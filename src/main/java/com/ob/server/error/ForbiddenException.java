@@ -4,7 +4,7 @@
 package com.ob.server.error;
 
 public class ForbiddenException
-extends ProtocolException {
+        extends ProtocolException {
     public ForbiddenException() {
         super("403, Forbidden", 403);
     }

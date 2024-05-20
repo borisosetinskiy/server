@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.handler.codec.http.HttpConstants
  *  it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap
@@ -75,7 +75,8 @@ public class RequestUtil {
         }
         byte[] buf = new byte[size];
         int pos = 0;
-        block5 : for (int i = 0; i < size; ++i) {
+        block5:
+        for (int i = 0; i < size; ++i) {
             char c = s.charAt(i);
             switch (c) {
                 case '%': {
@@ -94,10 +95,10 @@ public class RequestUtil {
                     if (c == '\uffff' || c2 == '\uffff') {
                         throw new IllegalArgumentException("invalid escape sequence `%" + s.charAt(i - 1) + s.charAt(i) + "' at index " + (i - 2) + " of: " + s);
                     }
-                    c = (char)(c * 16 + c2);
+                    c = (char) (c * 16 + c2);
                 }
                 default: {
-                    buf[pos++] = (byte)c;
+                    buf[pos++] = (byte) c;
                     continue block5;
                 }
                 case '+': {
@@ -110,16 +111,16 @@ public class RequestUtil {
 
     public static char decodeHexNibble(char c) {
         if ('0' <= c && c <= '9') {
-            return (char)(c - 48);
+            return (char) (c - 48);
         }
         if ('a' <= c && c <= 'f') {
-            return (char)(c - 97 + 10);
+            return (char) (c - 97 + 10);
         }
-        return 'A' <= c && c <= 'F' ? (char)(c - 65 + 10) : (char)'\uffff';
+        return 'A' <= c && c <= 'F' ? (char) (c - 65 + 10) : (char) '\uffff';
     }
 
     public static boolean addParam(Object2ObjectArrayMap params, String name, String value) {
-        params.put((Object)name, (Object)value);
+        params.put((Object) name, (Object) value);
         return true;
     }
 }

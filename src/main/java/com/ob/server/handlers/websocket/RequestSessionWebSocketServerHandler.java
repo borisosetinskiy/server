@@ -1,6 +1,6 @@
 /*
  * Decompiled with CFR 0_132.
- * 
+ *
  * Could not load the following classes:
  *  io.netty.channel.Channel
  *  io.netty.channel.ChannelHandlerContext
@@ -14,7 +14,9 @@
  */
 package com.ob.server.handlers.websocket;
 
-import com.ob.server.*;
+import com.ob.server.AttributeKeys;
+import com.ob.server.ChannelRequestDto;
+import com.ob.server.HttpUtils;
 import com.ob.server.error.ForbiddenException;
 import com.ob.server.session.RequestService;
 import com.ob.server.session.RequestSession;
@@ -25,18 +27,15 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @Slf4j
 public class RequestSessionWebSocketServerHandler
-extends WebSocketServerHandler {
+        extends WebSocketServerHandler {
     private final RequestService requestService;
     private final ChannelGroup allChannels;
     private Object2ObjectArrayMap<String, String> params = new Object2ObjectArrayMap<>();
-    private Logger logger = LoggerFactory.getLogger(RequestSessionWebSocketServerHandler.class);
 
     public RequestSessionWebSocketServerHandler(RequestService requestService, ChannelGroup allChannels) {
         super();
@@ -52,16 +51,16 @@ extends WebSocketServerHandler {
                     throw new ForbiddenException();
                 }
                 try {
-                    logger.debug("DECODE: Thread:{}, Channel:{}, Event:{}"
+                    log.debug("DECODE: Thread:{}, Channel:{}, Event:{}"
                             , Thread.currentThread().getName()
                             , ctx.channel().id().asShortText()
                             , evt);
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
                 ctx.channel().attr(AttributeKeys.REQUEST_SESSION_ATTR_KEY).set(requestSession);
             }
             ctx.fireUserEventTriggered(evt);
-        }
-        catch (Exception var4) {
+        } catch (Exception var4) {
             WebSocketUtil.onError(ctx, var4);
         }
     }
@@ -77,9 +76,10 @@ extends WebSocketServerHandler {
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         log.info("Channel name {} unregistered. Address {}"
                 , ctx.channel().id().asShortText(), ctx.channel().remoteAddress());
-        try{
+        try {
             this.allChannels.remove(ctx.channel());
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         ctx.fireChannelUnregistered();
     }
 
@@ -87,16 +87,17 @@ extends WebSocketServerHandler {
     protected void decode(ChannelHandlerContext ctx, Object o, List<Object> list) throws Exception {
         try {
             if (o instanceof FullHttpRequest) {
-                HttpUtils.params((HttpObject)o, params);
+                HttpUtils.params((HttpObject) o, params);
                 try {
-                    logger.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
+                    log.debug("DECODE: Thread:{}, Channel:{}, Message:{}"
                             , Thread.currentThread().getName()
                             , ctx.channel().id().asShortText()
                             , o);
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
             super.decode(ctx, o, list);
-        }catch (Exception var5) {
+        } catch (Exception var5) {
             WebSocketUtil.onError(ctx, var5);
         }
     }

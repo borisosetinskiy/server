@@ -4,7 +4,7 @@
 package com.ob.server.error;
 
 public class BadRequestException
-extends ProtocolException {
+        extends ProtocolException {
     public BadRequestException() {
         super("400, BadRequest", 400);
     }
