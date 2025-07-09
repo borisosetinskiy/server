@@ -1,0 +1,56 @@
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    key: /path/to/key.pem
+    cert: /path/to/cert.pem
+  
+  buffer:
+    receive: 32768
+    send: 65536
+    writeWaterMarkLow: 8192
+    writeWaterMarkHigh: 32768
+  
+  threads:
+    boss: 1
+    worker: 4
+  
+  timeouts:
+    readerIdle: 60
+    writerIdle: 300
+    allIdle: 600
+  
+  cors:
+    enabled: true
+    allowedOrigins: "*"
+    allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowedHeaders: "Authorization,Content-Type,X-Request-ID"
+    allowCredentials: true
+  
+  security:
+    jwt:
+      enabled: true
+      secret: "your-secret-key-here"
+      expiration: 3600
+  
+  rateLimit:
+    enabled: true
+    globalRequestsPerSecond: 1000
+    clientRequestsPerSecond: 100
+  
+  health:
+    enabled: true
+    version: "1.0.28"
+    applicationName: "netty-server"
+  
+  logging:
+    level: INFO
+    pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{requestId:-}] [%X{traceId:-}] - %msg%n"
+    file:
+      enabled: true
+      path: "logs/server.log"
+      maxSize: "100MB"
+      maxHistory: 30
+    json:
+      enabled: true
+      path: "logs/server-json.log" 
