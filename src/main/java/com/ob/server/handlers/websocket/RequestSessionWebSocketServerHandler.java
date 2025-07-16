@@ -1,17 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.channel.Channel
- *  io.netty.channel.ChannelHandlerContext
- *  io.netty.channel.ChannelId
- *  io.netty.channel.group.ChannelGroup
- *  io.netty.handler.codec.http.HttpObject
- *  io.netty.util.Attribute
- *  io.netty.util.AttributeKey
- *  it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap
- *  org.slf4j.Logger
- */
+
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.AttributeKeys;

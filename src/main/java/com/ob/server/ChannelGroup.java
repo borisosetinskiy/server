@@ -1,22 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.buffer.ByteBuf
- *  io.netty.buffer.ByteBufHolder
- *  io.netty.channel.Channel
- *  io.netty.channel.ChannelFuture
- *  io.netty.channel.ChannelFutureListener
- *  io.netty.channel.ChannelId
- *  io.netty.channel.ChannelPromise
- *  io.netty.channel.group.ChannelGroup
- *  io.netty.util.ReferenceCountUtil
- *  io.netty.util.concurrent.EventExecutor
- *  io.netty.util.concurrent.Future
- *  io.netty.util.concurrent.GenericFutureListener
- *  io.netty.util.internal.PlatformDependent
- *  io.netty.util.internal.StringUtil
- */
+
 package com.ob.server;
 
 import io.netty.buffer.ByteBuf;

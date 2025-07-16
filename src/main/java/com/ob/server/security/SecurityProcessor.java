@@ -1,6 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- */
+
 package com.ob.server.security;
 
 import io.netty.channel.ChannelHandlerContext;

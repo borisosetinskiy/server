@@ -1,6 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- */
+
 package com.ob.server.error;
 
 public class BadRequestException

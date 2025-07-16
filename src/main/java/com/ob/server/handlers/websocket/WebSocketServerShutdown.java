@@ -1,13 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.channel.group.ChannelGroup
- *  io.netty.channel.group.ChannelGroupFuture
- *  io.netty.channel.group.ChannelMatcher
- *  io.netty.channel.group.ChannelMatchers
- *  io.netty.handler.codec.http.websocketx.CloseWebSocketFrame
- */
+
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.ServerShutdown;

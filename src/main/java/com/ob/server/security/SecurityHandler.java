@@ -1,11 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.channel.ChannelHandlerContext
- *  io.netty.handler.codec.MessageToMessageDecoder
- *  io.netty.util.ReferenceCountUtil
- */
+
 package com.ob.server.security;
 
 import io.netty.channel.ChannelHandler;

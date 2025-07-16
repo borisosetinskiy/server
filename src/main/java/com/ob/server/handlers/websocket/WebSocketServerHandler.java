@@ -1,34 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.buffer.ByteBuf
- *  io.netty.buffer.Unpooled
- *  io.netty.channel.Channel
- *  io.netty.channel.ChannelFuture
- *  io.netty.channel.ChannelFutureListener
- *  io.netty.channel.ChannelHandler
- *  io.netty.channel.ChannelHandlerContext
- *  io.netty.channel.ChannelId
- *  io.netty.channel.ChannelInboundHandlerAdapter
- *  io.netty.channel.ChannelPipeline
- *  io.netty.handler.codec.MessageToMessageDecoder
- *  io.netty.handler.codec.http.DefaultFullHttpResponse
- *  io.netty.handler.codec.http.FullHttpRequest
- *  io.netty.handler.codec.http.HttpHeaders
- *  io.netty.handler.codec.http.HttpResponseStatus
- *  io.netty.handler.codec.http.HttpVersion
- *  io.netty.handler.codec.http.websocketx.CloseWebSocketFrame
- *  io.netty.handler.codec.http.websocketx.PingWebSocketFrame
- *  io.netty.handler.codec.http.websocketx.PongWebSocketFrame
- *  io.netty.handler.codec.http.websocketx.Utf8FrameValidator
- *  io.netty.handler.codec.http.websocketx.WebSocketFrame
- *  io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker
- *  io.netty.util.Attribute
- *  io.netty.util.AttributeKey
- *  io.netty.util.concurrent.GenericFutureListener
- *  org.slf4j.Logger
- */
+
 package com.ob.server.handlers.websocket;
 
 import io.netty.buffer.Unpooled;

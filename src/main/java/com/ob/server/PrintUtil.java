@@ -1,14 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.handler.codec.http.FullHttpRequest
- *  io.netty.handler.codec.http.HttpHeaders
- *  io.netty.handler.codec.http.HttpMethod
- *  io.netty.handler.codec.http.HttpRequest
- *  io.netty.handler.codec.http.HttpVersion
- *  io.netty.util.internal.StringUtil
- */
+
 package com.ob.server;
 
 import io.netty.handler.codec.http.FullHttpRequest;

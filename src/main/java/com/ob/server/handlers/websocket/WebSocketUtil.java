@@ -1,22 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.buffer.ByteBuf
- *  io.netty.buffer.Unpooled
- *  io.netty.channel.Channel
- *  io.netty.channel.ChannelFuture
- *  io.netty.channel.ChannelFutureListener
- *  io.netty.channel.ChannelHandlerContext
- *  io.netty.channel.ChannelId
- *  io.netty.handler.codec.http.DefaultFullHttpResponse
- *  io.netty.handler.codec.http.HttpResponseStatus
- *  io.netty.handler.codec.http.HttpVersion
- *  io.netty.handler.codec.http.websocketx.CloseWebSocketFrame
- *  io.netty.handler.codec.http.websocketx.WebSocketHandshakeException
- *  io.netty.util.concurrent.GenericFutureListener
- *  org.slf4j.Logger
- */
+
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.error.*;

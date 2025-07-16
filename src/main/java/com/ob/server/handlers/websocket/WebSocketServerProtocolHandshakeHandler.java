@@ -1,30 +1,4 @@
-/*
- * Decompiled with CFR 0_132.
- *
- * Could not load the following classes:
- *  io.netty.channel.Channel
- *  io.netty.channel.ChannelFuture
- *  io.netty.channel.ChannelFutureListener
- *  io.netty.channel.ChannelHandler
- *  io.netty.channel.ChannelHandlerContext
- *  io.netty.channel.ChannelInboundHandlerAdapter
- *  io.netty.channel.ChannelPipeline
- *  io.netty.handler.codec.http.DefaultFullHttpResponse
- *  io.netty.handler.codec.http.FullHttpRequest
- *  io.netty.handler.codec.http.HttpConstants
- *  io.netty.handler.codec.http.HttpHeaderNames
- *  io.netty.handler.codec.http.HttpHeaders
- *  io.netty.handler.codec.http.HttpMethod
- *  io.netty.handler.codec.http.HttpRequest
- *  io.netty.handler.codec.http.HttpResponseStatus
- *  io.netty.handler.codec.http.HttpVersion
- *  io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker
- *  io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory
- *  io.netty.handler.ssl.SslHandler
- *  io.netty.util.AsciiString
- *  io.netty.util.concurrent.Future
- *  io.netty.util.concurrent.GenericFutureListener
- */
+
 package com.ob.server.handlers.websocket;
 
 import com.ob.server.RequestUtil;
